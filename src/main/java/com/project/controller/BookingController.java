@@ -29,6 +29,11 @@ public class BookingController {
 
     @GetMapping("/")
     public String home() { return "redirect:/book"; }
+    
+    @GetMapping("/DentalClinic")
+    public String Landingpage() {
+        return "/WEB-INF/jsp/landingpage.jsp"; 
+    }
 
     @GetMapping("/book")
     public String showBookPage(@RequestParam(required=false) String date, Model model, HttpSession session) {

@@ -28,6 +28,11 @@ public class AuthController {
 
     @Autowired
     private EmailService emailService;
+    
+    @GetMapping("/SkustaTeeth")
+    public String showLandingpage() {
+        return "/WEB-INF/jsp/landingpage.jsp"; 
+    }
 
     @GetMapping("/register")
     public String showRegister() {

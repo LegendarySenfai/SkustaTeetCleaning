@@ -88,9 +88,9 @@
     <!-- No appointments message -->
     <c:if test="${empty appointments}">
         <main>
-            <p>You have no appointments yet.</p>
+            <p class="noappoint">You have no appointments yet.</p>
             <c:if test="${not hasActiveAppointment}">
-                <p><a href="/book" class="btn">Book Your First Appointment</a></p>
+  
             </c:if>
         </main>
     </c:if>

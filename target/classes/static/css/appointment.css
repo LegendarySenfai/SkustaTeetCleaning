@@ -102,6 +102,13 @@ main h1 {
   text-align: center;
 }
 
+.noappoint {
+	color: red;
+	font-size: 1.2rem;
+	text-align: center;
+	margin-top: 2rem;
+}
+
 /* === FORM STYLING === */
 form {
   background: white;

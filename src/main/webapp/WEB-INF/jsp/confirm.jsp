@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Appointment Confirmed</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/appointment.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/confirm.css">
 </head>
 <body>
     <!-- === HEADER === -->
