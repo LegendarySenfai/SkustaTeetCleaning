@@ -2,96 +2,123 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
-<head><title>Book Appointment</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Book Appointment</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/appointment.css">	
+</head>
 <body>
-<h2>Book Appointment</h2>
-<p>Welcome, ${sessionScope.username} | <a href="/myappointments">My Appointments</a> | <a href="/logout">Logout</a></p>
+	<header>
+	  <div class="header-left">
+	    <div class="logo">
+	      <img src="${pageContext.request.contextPath}/images/dentallogo.png" alt="Dental Clinic Logo">
+	    </div>
+	    <nav>
+	      <a class="homer" href="/DentalClinic">Home</a>
+	      <a class="boker active" href="/book">Book an Appointment</a>
+	      <a class="apointer" href="/myappointments">My Appointments</a>
+	    </nav>
+	  </div>
+	  <div class="user-info">
+	    Welcome, ${sessionScope.username} | <a href="/logout">Logout</a>
+	  </div>
+	</header>
 
-<c:if test="${not empty errors}">
-    <ul style="color:red">
-        <c:forEach var="e" items="${errors}"><li>${e}</li></c:forEach>
-    </ul>
-</c:if>
-
-<!-- DEBUG (remove after confirmed) -->
-<p>Debug: dentists=${fn:length(dentists)}, services=${fn:length(services)}</p>
-
-<form id="bookForm" method="post" action="/book">
-    <label>Dentist:
-        <select name="dentistId" id="dentistSelect">
-            <option value="">-- select dentist --</option>
-            <c:forEach var="d" items="${dentists}">
-                <option value="${d.id}">${d.name} (${d.specialization})</option>
+    <!-- Display validation errors with styled list -->
+    <c:if test="${not empty errors}">
+        <ul class="error-list">
+            <c:forEach var="e" items="${errors}">
+                <li>${e}</li>
             </c:forEach>
-        </select>
-    </label><br/>
+        </ul>
+    </c:if>
 
-    <label>Services:<br/>
-        <c:forEach var="s" items="${services}">
-            <input type="checkbox" name="serviceIds" value="${s.id}" /> ${s.name}<br/>
-        </c:forEach>
-    </label><br/>
+    <main>
+        <h1>Book Appointment</h1>
 
-    <label>Date: <input type="date" id="dateInput" name="date" value="${selectedDate}"/></label>
-    <button type="button" id="showTimesBtn">Show Times</button><br/>
+        <form id="bookForm" method="post" action="/book">
+            <label>Dentist:
+                <select name="dentistId" id="dentistSelect">
+                    <option class="inside-box" value="">-- select dentist --</option>
+                    <c:forEach var="d" items="${dentists}">
+                        <option value="${d.id}">${d.name} (${d.specialization})</option>
+                    </c:forEach>
+                </select>
+            </label><br/>
 
-    <div id="timesArea">
-        <!-- times will be injected here -->
-    </div>
+            <label>Services:<br/>
+                <div class="services-grid">
+                    <c:forEach var="s" items="${services}">
+                        <label class="service-item">
+                            <input type="checkbox" name="serviceIds" value="${s.id}" /> ${s.name}
+                        </label>
+                    </c:forEach>
+                </div>
+            </label><br/>
 
-    <input type="hidden" name="time" id="timeInput"/>
-    <br/>
-    <button type="submit">Book</button>
-</form>
+            <label>Choose your appointment date: 
+                <input type="date" id="dateInput" name="date" value="${selectedDate}"/>
+            </label>
+            <button type="button" id="showTimesBtn">Select your preferred time</button><br/>
 
-<script>
-    // Helper: safely build radio HTML using string concatenation
-    function buildRadioHtml(time, ok) {
-        var color = ok ? 'black' : 'gray';
-        var disabledAttr = ok ? '' : 'disabled';
-        // Build string with concatenation — avoid EL-like sequences so JSP EL won't evaluate them
-        return '<label style="color:' + color + '">' +
-               '<input type="radio" name="timeRadio" value="' + time + '" ' + disabledAttr + '/> ' +
-               time + '</label><br/>';
-    }
+            <div class="time-grid" id="timesArea">
+                <!-- Available times will appear here after clicking "Select your preferred time" -->
+            </div>
 
-    document.getElementById('showTimesBtn').addEventListener('click', async function () {
-        var date = document.getElementById('dateInput').value;
-        var dentistId = document.getElementById('dentistSelect').value;
-        if (!date) { alert('Pick a date first'); return; }
+            <input type="hidden" name="time" id="timeInput" />
+            <br/>
+            <button type="submit">Book</button>
+        </form>
+    </main>
 
-        // Use string concatenation to avoid server-side EL parsing
-        var url = '/api/available?date=' + encodeURIComponent(date) + '&dentistId=' + (dentistId || '');
-        try {
-            var r = await fetch(url);
-            if (!r.ok) {
-                alert('Failed to fetch times: ' + r.statusText);
+    <script>
+        function buildRadioHtml(time, ok) {
+            var disabledAttr = ok ? '' : 'disabled';
+            var className = ok ? 'time-item' : 'time-item disabled';
+            return '<label class="' + className + '">' +
+                   '<input type="radio" name="timeRadio" value="' + time + '" ' + disabledAttr + '/> ' +
+                   time +
+                   '</label>';
+        }
+
+        document.getElementById('showTimesBtn').addEventListener('click', async function () {
+            var date = document.getElementById('dateInput').value;
+            var dentistId = document.getElementById('dentistSelect').value;
+            if (!date) {
+                alert('Please pick a date first.');
                 return;
             }
-            var arr = await r.json();
-            var area = document.getElementById('timesArea');
-            area.innerHTML = '';
 
-            arr.forEach(function (it) {
-                var parts = it.split('|');
-                var time = parts[0];
-                var ok = parts[1] === 'true';
-                area.innerHTML += buildRadioHtml(time, ok);
-            });
-
-            // set hidden time input when selecting radio
-            area.addEventListener('change', function (e) {
-                if (e.target && e.target.name === 'timeRadio') {
-                    document.getElementById('timeInput').value = e.target.value;
+            // Build API URL with query parameters
+            var url = '/api/available?date=' + encodeURIComponent(date) + '&dentistId=' + (dentistId || '');
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(response.statusText);
                 }
-            });
-        } catch (err) {
-            console.error(err);
-            alert('Error fetching times. See console.');
-        }
-    });
-</script>
+                const timeSlots = await response.json(); // Expected: ["09:00|true", "10:00|false", ...]
 
+                const timesArea = document.getElementById('timesArea');
+                timesArea.innerHTML = '';
 
+                timeSlots.forEach(function(slot) {
+                    const [time, available] = slot.split('|');
+                    const isAvailable = available === 'true';
+                    timesArea.innerHTML += buildRadioHtml(time, isAvailable);
+                });
+
+                // Update hidden input when a time is selected
+                timesArea.addEventListener('change', function(e) {
+                    if (e.target && e.target.name === 'timeRadio') {
+                        document.getElementById('timeInput').value = e.target.value;
+                    }
+                });
+            } catch (err) {
+                console.error('Error fetching available times:', err);
+                alert('Failed to load available times. Please try again.');
+            }
+        });
+    </script>
 </body>
 </html>

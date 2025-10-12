@@ -1,0 +1,326 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+  
+  /* === BACKGROUND IMAGE === */
+  background-image: url('/images/square (2).png');
+  background-size: cover;        
+  background-position: center;   
+  background-attachment: fixed;  
+  background-repeat: no-repeat;  
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.85); 
+  z-index: -1; 
+  pointer-events: none;
+}
+
+/* === HEADER === */
+header {
+  background-color: white;
+  color: #333;
+  height: 70px; 
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+header .logo img {
+  height: 6.5rem;
+  display: block;
+}
+
+header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+header nav a {
+  color: #ff69b4;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+header nav a:hover,
+header nav a.active {
+  color: #ff1493;
+}
+
+header .user-info {
+  color: #555;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+header .user-info a {
+  color: #ff69b4;
+  text-decoration: underline;
+  margin-left: 0.4rem;
+}
+
+/* === MAIN CONTENT === */
+main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+main h1 {
+  color: #ff69b4;
+  margin-bottom: 1.5rem;
+  font-size: 3rem;
+  text-align: center;
+}
+
+/* === FORM STYLING === */
+form {
+  background: white;
+  padding: 1.8rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+  width: 100%;
+  max-width: 700px;
+  font-size: 1rem;
+}
+
+form label {
+  display: block;
+  margin: 0.8rem 0 0.4rem;
+  font-weight: 600;
+}
+
+form inside-box {
+	font-size: 0.5rem;
+}
+
+form select {
+  font-size: 1rem; 
+  padding: 0.6rem;
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+form input[type="date"],
+form select {
+  padding: 0.6rem;
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid #ddd;
+  border-radius: 6px; 
+}
+
+form input[type="checkbox"] {
+  margin-right: 0.4rem;
+}
+
+form button[type="button"],
+form button[type="submit"] {
+  background-color: #ff69b4;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 0.6rem;
+  font-size: 1.05rem;
+}
+
+form button:hover {
+  background-color: #e55a9f;
+}
+
+#timesArea {
+  margin-top: 1.2rem;
+}
+
+#timesArea label {
+  display: block;
+  margin: 0.4rem 0;
+}
+
+/* === ERROR MESSAGES === */
+.error-list {
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 0 1.5rem;
+  color: #d32f2f;
+  list-style: none;
+}
+
+.error-list li {
+  background: #ffebee;
+  padding: 0.6rem;
+  border-left: 4px solid #f44336;
+  margin-bottom: 0.5rem;
+  border-radius: 0 4px 4px 0;
+}
+
+/* === SERVICES GRID === */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.service-item {
+  font-size: 1.1rem; 
+  background-color: #f8f9fa;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.service-item:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.service-item input[type="checkbox"] {
+  margin-right: 0.5rem;
+  accent-color: #ff69b4;
+}
+
+.service-item {
+  word-wrap: break-word;
+  min-width: 0; /* Prevents overflow */
+}
+
+/* === TIME SLOTS GRID === */
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin: 1.2rem 0;
+  width: 100%;
+  max-width: 700px; 
+}
+
+.time-item {
+  font-size: 1.1rem; 
+  background-color: #f8f9fa;
+  padding: 0.7rem;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.time-item:hover:not(.disabled) {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.time-item input[type="radio"] {
+  margin-right: 0.6rem;
+  accent-color: #ff69b4; 
+}
+
+.time-item.disabled {
+  background-color: #f1f1f1;
+  color: #999;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.time-item.disabled:hover {
+  background-color: #f1f1f1; 
+}
+
+/* === APPOINTMENTS TABLE === */
+.appointments-table-container {
+  width: 100%;
+  padding: 0 1.5rem; 
+  margin: 1.5rem 0;
+}
+
+.appointments-table {
+  width: 100%;
+  max-width: none; 
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+}
+
+.appointments-table th,
+.appointments-table td {
+  padding: 0.8rem;
+  text-align: left;
+  border: 1px solid #dee2e6; 
+}
+
+.appointments-table th {
+  background-color: #ff69b4;
+  color: white;
+  font-weight: 600;
+}
+
+.appointments-table th {
+  border-color: dee2e6;
+}
+
+.appointments-table a {
+	color: #ff69b4;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.appointments-table a:hover {
+	color: rgb(223, 55, 139);
+	text-decoration: underline;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: #ff69b4;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
