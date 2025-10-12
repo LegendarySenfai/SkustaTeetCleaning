@@ -3,12 +3,17 @@ package com.project.controller;
 import com.project.otp.EmailService;
 import com.project.otp.OtpInfo;
 import com.project.otp.OtpService;
+import com.project.model.Appointment;
+import com.project.repository.AppointmentRepository;
+import com.project.repository.DentistRepository;
+import com.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -18,9 +23,9 @@ public class AdminController {
     private static final String SESSION_ADMIN_OTP_ATTEMPTS = "ADMIN_OTP_ATTEMPTS";
     private static final String SESSION_ADMIN_AUTH = "adminAuthenticated";
 
-    // static credentials
-    private static final String ADMIN_USER = "Admin123!"; // or whatever you use in your app
-    private static final String ADMIN_PASS = "Admin123!"; // your static password (case-sensitive)
+    // static credentials (you already use Admin123! in your code)
+    private static final String ADMIN_USER = "Admin123!";
+    private static final String ADMIN_PASS = "Admin123!";
     private static final String SYSTEM_ADMIN_EMAIL = "skustateethclinic@gmail.com";
 
     @Autowired
@@ -29,9 +34,19 @@ public class AdminController {
     @Autowired
     private EmailService emailService;
 
+    // <-- REPOSITORIES we need to populate the model for the JSP
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private DentistRepository dentistRepository;
+
     @GetMapping("/login")
     public String showAdminLogin() {
-        return "/WEB-INF/jsp/admin-login.jsp"; // adapt if your admin page path differs
+        return "/WEB-INF/jsp/admin-login.jsp";
     }
 
     @PostMapping("/login")
@@ -90,20 +105,55 @@ public class AdminController {
 
         // mark admin authenticated
         session.setAttribute(SESSION_ADMIN_AUTH, true);
-        // You may want to set a role or redirect to admin dashboard
-        return "redirect:/admin/dashboard"; // adapt to your admin dashboard URL
+        return "redirect:/admin/dashboard";
     }
 
+    // ---------------------------
+    // DASHBOARD: populate model
+    // ---------------------------
     @GetMapping("/dashboard")
-    public String adminDashboard(HttpSession session) {
+    public String adminDashboard(HttpSession session, Model model) {
         Boolean auth = (Boolean) session.getAttribute(SESSION_ADMIN_AUTH);
         if (auth == null || !auth) return "redirect:/admin/login";
-        return "/WEB-INF/jsp/admin-dashboard.jsp"; // adapt as necessary
+
+        // fetch lists from repositories
+        List<Appointment> appts = appointmentRepository.findAll();
+        // Touch nested associations so JSP doesn't hit lazy-loading blanks (simple defensive step)
+        for (Appointment a : appts) {
+            if (a.getPatient() != null) {
+                // force load patient fields
+                a.getPatient().getFirstName();
+                a.getPatient().getLastName();
+            }
+            if (a.getDentist() != null) {
+                a.getDentist().getName();
+            }
+            if (a.getServices() != null) {
+                a.getServices().size();
+            }
+        }
+
+        model.addAttribute("appts", appts);
+        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("dentists", dentistRepository.findAll());
+
+        return "/WEB-INF/jsp/admin-dashboard.jsp";
     }
 
     @GetMapping("/logout")
     public String logoutAdmin(HttpSession session) {
         session.removeAttribute(SESSION_ADMIN_AUTH);
         return "redirect:/admin/login";
+    }
+
+    // ---------------------------
+    // Debug endpoint (temporary)
+    // ---------------------------
+    @GetMapping("/debug-counts")
+    @ResponseBody
+    public String debugCounts() {
+        return "users=" + userRepository.count()
+                + ", appointments=" + appointmentRepository.count()
+                + ", dentists=" + dentistRepository.count();
     }
 }
