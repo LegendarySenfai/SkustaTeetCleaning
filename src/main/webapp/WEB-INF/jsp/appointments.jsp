@@ -27,7 +27,7 @@
                 <img src="${pageContext.request.contextPath}/images/dentallogo.png" alt="Dental Clinic Logo">
             </div>
             <nav>
-                <a class="homer" href="/SkustaTeeth">Home</a>
+                <a class="homer" href="/DentalClinic">Home</a>
                 <!-- Conditionally show Book link only if no active appointment -->
                 <c:if test="${not hasActiveAppointment}">
                     <a class="boker" href="/book">Book an Appointment</a>
