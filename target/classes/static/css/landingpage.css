@@ -17,7 +17,7 @@ header {
   height: 70px;
   padding: 0 2rem;
   display: flex;
-  justify-content: space-between; /* This now spaces logo | nav | user */
+  justify-content: space-between; 
   align-items: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   position: fixed;
@@ -26,13 +26,11 @@ header {
   z-index: 999;
 }
 
-/* Logo */
 header .header-logo img {
 	height: 6.5rem;
 	display: block;
 }
 
-/* Centered Navigation */
 header .header-nav {
   display: flex;
   align-items: center;

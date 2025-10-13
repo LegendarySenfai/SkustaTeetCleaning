@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+p {
+	font-family: "Lato", sans-serif;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
@@ -155,7 +159,9 @@ form button[type="submit"] {
   cursor: pointer;
   font-weight: bold;
   margin-top: 0.6rem;
+  margin-left: -2rem;
   font-size: 1.05rem;
+  font-family: "Lato", sans-serif;
 }
 
 form button:hover {
@@ -296,6 +302,7 @@ form button:hover {
   background-color: #ff69b4;
   color: white;
   font-weight: 600;
+  font-family: "Lato", sans-serif;
 }
 
 .appointments-table th {
@@ -306,6 +313,7 @@ form button:hover {
 	color: #ff69b4;
 	text-decoration: none;
 	font-weight: 600;
+	font-family: "Lato", sans-serif;
 }
 
 .appointments-table a:hover {
@@ -319,6 +327,7 @@ form button:hover {
   color: #ff69b4;
   text-decoration: none;
   font-weight: 600;
+  font-family: "Lato", sans-serif;
 }
 
 .back-link:hover {

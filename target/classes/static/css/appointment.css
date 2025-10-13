@@ -2,13 +2,20 @@
   box-sizing: border-box;
 }
 
+span {
+	font-family: "Lato", sans-serif;
+}
+
+option {
+	font-family: "Lato", sans-serif;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f9f9f9;
   color: #333;
-  
   background-image: url('/images/square (2).png');
   background-size: cover;      
   background-position: center;   
@@ -27,7 +34,6 @@ body::before {
   z-index: -1; 
   pointer-events: none;
 }
-
 
 /* === HEADER === */
 header {
@@ -65,6 +71,7 @@ header nav a {
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
   transition: background-color 0.2s;
+  font-family: 'Lato', sans-serif;
 }
 
 header nav a:hover,
@@ -103,10 +110,18 @@ main h1 {
 }
 
 .noappoint {
-	color: red;
-	font-size: 1.2rem;
-	text-align: center;
-	margin-top: 2rem;
+  color: red;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* ✅ NEW: Style for label text */
+.label-text {
+  font-family: 'Lato', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.4rem;
 }
 
 /* === FORM STYLING === */
@@ -120,32 +135,16 @@ form {
   font-size: 1rem;
 }
 
-form label {
-  display: block;
-  margin: 0.8rem 0 0.4rem;
-  font-weight: 600;
-}
+/* ❌ REMOVED: invalid "form inside-box" rule */
 
-form inside-box {
-	font-size: 0.5rem;
-}
-
-form select {
+form select,
+form input[type="date"] {
   font-size: 1rem; 
   padding: 0.6rem;
   width: 100%;
   max-width: 320px;
   border: 1px solid #ddd;
   border-radius: 6px;
-}
-
-form input[type="date"],
-form select {
-  padding: 0.6rem;
-  width: 100%;
-  max-width: 320px;
-  border: 1px solid #ddd;
-  border-radius: 6px; 
 }
 
 form input[type="checkbox"] {
@@ -163,6 +162,7 @@ form button[type="submit"] {
   font-weight: bold;
   margin-top: 0.6rem;
   font-size: 1.05rem;
+  font-family: 'Lato', sans-serif;
 }
 
 form button:hover {
@@ -171,11 +171,6 @@ form button:hover {
 
 #timesArea {
   margin-top: 1.2rem;
-}
-
-#timesArea label {
-  display: block;
-  margin: 0.4rem 0;
 }
 
 /* === ERROR MESSAGES === */
@@ -198,7 +193,7 @@ form button:hover {
 /* === SERVICES GRID === */
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.8rem;
   margin-top: 0.5rem;
 }
@@ -213,6 +208,7 @@ form button:hover {
   align-items: center;
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s;
+  font-family: 'Lato', sans-serif;
 }
 
 .service-item:hover {
@@ -225,11 +221,6 @@ form button:hover {
   accent-color: #ff69b4; 
 }
 
-.service-item {
-  word-wrap: break-word;
-  min-width: 0; /* Prevents overflow */
-}
-
 /* === TIME SLOTS GRID === */
 .time-grid {
   display: grid;
@@ -237,7 +228,7 @@ form button:hover {
   gap: 0.8rem;
   margin: 1.2rem 0;
   width: 100%;
-  max-width: 700px; /* match form width */
+  max-width: 700px;
 }
 
 .time-item {
@@ -251,6 +242,7 @@ form button:hover {
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
+  font-family: 'Lato', sans-serif;
 }
 
 .time-item:hover:not(.disabled) {
@@ -268,8 +260,4 @@ form button:hover {
   color: #999;
   cursor: not-allowed;
   border-style: dashed;
-}
-
-.time-item.disabled:hover {
-  background-color: #f1f1f1; 
 }

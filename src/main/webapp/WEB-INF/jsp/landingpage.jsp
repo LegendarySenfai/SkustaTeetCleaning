@@ -31,8 +31,15 @@
 	    <a href="#about">About Us</a>
 	  </nav>
 	  <div class="user-info">
-	    <span>Hi, ${sessionScope.username}</span>
-	    <a href="${pageContext.request.contextPath}/logout">Logout</a>
+	    <c:choose>
+	      <c:when test="${not empty sessionScope.username}">
+	        <span>Hi, ${sessionScope.username}</span>
+	        <a href="${pageContext.request.contextPath}/logout">Logout</a>
+	      </c:when>
+	      <c:otherwise>
+	        <a href="${pageContext.request.contextPath}/login">Login</a>
+	      </c:otherwise>
+	    </c:choose>
 	  </div>
 	</header>
 
