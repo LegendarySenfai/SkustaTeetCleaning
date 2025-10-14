@@ -107,7 +107,7 @@
 
 	    document.getElementById('showTimesBtn').addEventListener('click', async function () {
 	        const timesArea = document.getElementById('timesArea');
-	        const isCurrentlyVisible = timesArea.style.display !== 'none';
+			const isCurrentlyVisible = getComputedStyle(timesArea).display !== 'none';
 
 	        if (isCurrentlyVisible) {
 	            // Close: hide the time slots

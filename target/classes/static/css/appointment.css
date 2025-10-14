@@ -223,7 +223,7 @@ form button:hover {
 
 /* === TIME SLOTS GRID === */
 .time-grid {
-  display: grid;
+  display: none;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.8rem;
   margin: 1.2rem 0;

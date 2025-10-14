@@ -65,6 +65,7 @@ header nav a {
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
   transition: background-color 0.2s;
+  font-family: 'Lato', sans-serif;
 }
 
 header nav a:hover,
@@ -179,4 +180,45 @@ main {
   border-left: 4px solid #f44336;
   margin-bottom: 0.5rem;
   border-radius: 0 4px 4px 0;
+}
+
+.time-grid {
+  display: none;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin: 1rem 0;
+  width: 100%;
+  max-width: 700px;
+  display: none;
+}
+
+.time-item {
+  font-size: 1.1rem;
+  background-color: #f8f9fa;
+  padding: 0.7rem;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.time-item:hover:not(.disabled) {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.time-item input[type="radio"] {
+  margin-right: 0.6rem;
+  accent-color: #ff69b4;
+}
+
+.time-item.disabled {
+  background-color: #f1f1f1;
+  color: #999;
+  cursor: not-allowed;
+  border-style: dashed;
 }

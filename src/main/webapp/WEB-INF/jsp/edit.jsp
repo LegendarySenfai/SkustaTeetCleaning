@@ -5,24 +5,21 @@
     <meta charset="UTF-8">
     <title>Edit Appointment</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/appointment.css">
-    
-    <!-- ✅ Clean Google Fonts (no extra spaces) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+	
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-    <!-- === SAME HEADER AS BOOKING PAGE === -->
+    <!-- === HEADER === -->
     <header>
         <div class="header-left">
             <div class="logo">
@@ -53,7 +50,7 @@
         <form class="edit-form" method="post" action="/appointments/${appt.id}/edit">
             <label>
                 <span class="label-text">Dentist:</span>
-                <select name="dentistId">
+                <select name="dentistId" id="dentistSelect">
                     <c:forEach var="d" items="${dentists}">
                         <option value="${d.id}" <c:if test="${d.id == appt.dentist.id}">selected</c:if>>
                             ${d.name} <c:if test="${not empty d.specialization}">(${d.specialization})</c:if>
@@ -79,16 +76,94 @@
 
             <label>
                 <span class="label-text">Date:</span>
-                <input type="date" name="date" value="${appt.appointmentDate}" />
+                <input type="date" name="date" id="dateInput" value="${appt.appointmentDate}" />
             </label>
 
-            <label>
-                <span class="label-text">Time:</span>
-                <input type="time" name="time" value="${appt.appointmentStart}" />
-            </label><br/>
+            <!-- ✅ TIME SECTION: IDENTICAL TO BOOK.JSP, WITH PRE-SELECTION -->
+            <button type="button" id="showTimesBtn">Select your preferred time</button><br/>
+            <div class="time-grid" id="timesArea"></div>
+            <input type="hidden" name="time" id="timeInput" value="${appt.appointmentStart}" />
 
+            <br/>
             <button type="submit" class="btn">Save Changes</button>
         </form>
     </main>
+
+    <!-- ✅ SCRIPT: COPY OF BOOK.JSP, WITH MINIMAL EDIT FOR PRE-SELECTION -->
+    <script>
+        let timeSlotsLoaded = false;
+        let currentTimesHtml = '';
+        const initialTime = "${appt.appointmentStart}"; // Pre-selected time
+
+        function buildRadioHtml(time, ok) {
+            var disabledAttr = ok ? '' : 'disabled';
+            var checkedAttr = (time === initialTime) ? 'checked' : '';
+            var className = ok ? 'time-item' : 'time-item disabled';
+            return '<label class="' + className + '">' +
+                   '<input type="radio" name="timeRadio" value="' + time + '" ' + disabledAttr + ' ' + checkedAttr + '/> ' +
+                   time +
+                   '</label>';
+        }
+
+        document.getElementById('showTimesBtn').addEventListener('click', async function () {
+            const timesArea = document.getElementById('timesArea');
+			const isCurrentlyVisible = getComputedStyle(timesArea).display !== 'none';
+
+            if (isCurrentlyVisible) {
+                timesArea.style.display = 'none';
+                this.textContent = 'Select your preferred time';
+                return;
+            }
+
+            var date = document.getElementById('dateInput').value;
+            if (!date) {
+                alert('Please pick a date first.');
+                return;
+            }
+
+            var dentistId = document.getElementById('dentistSelect').value;
+            if (!dentistId) {
+                alert('Please select a dentist first.');
+                return;
+            }
+
+            if (!timeSlotsLoaded) {
+                var url = '/api/available?date=' + encodeURIComponent(date) + '&dentistId=' + encodeURIComponent(dentistId);
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    const timeSlots = await response.json();
+
+                    currentTimesHtml = '';
+                    timeSlots.forEach(function(slot) {
+                        const [time, available] = slot.split('|');
+                        const isAvailable = available === 'true';
+                        currentTimesHtml += buildRadioHtml(time, isAvailable);
+                    });
+
+                    timeSlotsLoaded = true;
+                } catch (err) {
+                    console.error('Error fetching available times:', err);
+                    alert('Failed to load available times. Please try again.');
+                    return;
+                }
+            }
+
+            timesArea.innerHTML = currentTimesHtml;
+            timesArea.style.display = 'grid';
+            this.textContent = 'Hide available times';
+
+            const handleChange = function(e) {
+                if (e.target && e.target.name === 'timeRadio') {
+                    document.getElementById('timeInput').value = e.target.value;
+                }
+            };
+
+            timesArea.removeEventListener('change', handleChange);
+            timesArea.addEventListener('change', handleChange);
+        });
+    </script>
 </body>
 </html>
