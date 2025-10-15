@@ -4,6 +4,8 @@ import com.project.otp.EmailService;
 import com.project.otp.OtpInfo;
 import com.project.otp.OtpService;
 import com.project.model.Appointment;
+import com.project.model.User;
+import com.project.model.Dentist;
 import com.project.repository.AppointmentRepository;
 import com.project.repository.DentistRepository;
 import com.project.repository.UserRepository;
@@ -156,4 +158,65 @@ public class AdminController {
                 + ", appointments=" + appointmentRepository.count()
                 + ", dentists=" + dentistRepository.count();
     }
+ // ---------------------------
+ // DELETE ENDPOINTS
+ // ---------------------------
+
+ @PostMapping("/deleteAppointment")
+ public String deleteAppointment(@RequestParam Long id, HttpSession session) {
+     Boolean auth = (Boolean) session.getAttribute(SESSION_ADMIN_AUTH);
+     if (auth == null || !auth) return "redirect:/admin/login";
+
+     appointmentRepository.deleteById(id);
+     return "redirect:/admin/dashboard";
+ }
+
+ @PostMapping("/deleteUser")
+ public String deleteUser(@RequestParam Long id, HttpSession session) {
+     Boolean auth = (Boolean) session.getAttribute(SESSION_ADMIN_AUTH);
+     if (auth == null || !auth) return "redirect:/admin/login";
+
+     userRepository.deleteById(id);
+     return "redirect:/admin/dashboard";
+ }
+
+ @PostMapping("/deleteDentist")
+ public String deleteDentist(@RequestParam Long id, HttpSession session) {
+     Boolean auth = (Boolean) session.getAttribute(SESSION_ADMIN_AUTH);
+     if (auth == null || !auth) return "redirect:/admin/login";
+
+     dentistRepository.deleteById(id);
+     return "redirect:/admin/dashboard";
+ }
+
+ // ---------------------------
+ // UPDATE ENDPOINTS (example skeletons)
+ // ---------------------------
+
+ @PostMapping("/updateAppointment")
+ public String updateAppointment(@ModelAttribute Appointment appointment, HttpSession session) {
+     Boolean auth = (Boolean) session.getAttribute(SESSION_ADMIN_AUTH);
+     if (auth == null || !auth) return "redirect:/admin/login";
+
+     appointmentRepository.save(appointment);
+     return "redirect:/admin/dashboard";
+ }
+
+ @PostMapping("/updateUser")
+ public String updateUser(@ModelAttribute User user, HttpSession session) {
+     Boolean auth = (Boolean) session.getAttribute(SESSION_ADMIN_AUTH);
+     if (auth == null || !auth) return "redirect:/admin/login";
+
+     userRepository.save(user);
+     return "redirect:/admin/dashboard";
+ }
+
+ @PostMapping("/updateDentist")
+ public String updateDentist(@ModelAttribute Dentist dentist, HttpSession session) {
+     Boolean auth = (Boolean) session.getAttribute(SESSION_ADMIN_AUTH);
+     if (auth == null || !auth) return "redirect:/admin/login";
+
+     dentistRepository.save(dentist);
+     return "redirect:/admin/dashboard";
+ }
 }
