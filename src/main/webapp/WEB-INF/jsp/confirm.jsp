@@ -11,7 +11,7 @@
     <header>
         <div class="header-left">
             <div class="logo">
-                <img src="${pageContext.request.contextPath}/images/dentallogo.png" alt="Dental Clinic Logo">
+                <img src="${pageContext.request.contextPath}/images/SkustaTeethLogo.png" alt="Dental Clinic Logo">
             </div>
             <nav>
                 <a class="homer" href="/SkustaTeeth">Home</a>

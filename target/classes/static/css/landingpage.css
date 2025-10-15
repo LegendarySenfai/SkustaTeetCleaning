@@ -10,6 +10,11 @@ body {
   color: #000;
 }
 
+btn {
+	font-family: 'Lato', sans-serif;
+	font-weight: bold;
+}
+
 /* ===== NAV SECTION ===== */
 header {
   background-color: white;
@@ -27,7 +32,7 @@ header {
 }
 
 header .header-logo img {
-	height: 6.5rem;
+	height: 5.5rem;
 	display: block;
 }
 
@@ -73,7 +78,7 @@ header .user-info a {
 }
 /* ===== HERO SECTION ===== */
 .hero {
-  margin-top: 100px;
+  margin-top: 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -120,8 +125,8 @@ header .user-info a {
   transition: 0.3s;
   border: none;
   cursor: pointer;
-  font-family: 'Crimson Pro', serif;
-  font-weight: 400;
+  font-family: 'Lato', sans-serif;
+  font-weight: bold;
 }
 
 .btn:hover {
@@ -136,7 +141,7 @@ header .user-info a {
 /* ===== SERVICES ===== */
 .services {
   text-align: center;
-  padding: 60px 40px;
+  padding: 6.5rem 2.5rem;
   background-color: #fafafa; /* Optional: soft background */
 }
 
@@ -149,8 +154,8 @@ header .user-info a {
 }
 
 .services a {
-	font-family: 'Crimson Pro', serif;
-	font-weight: 400;
+	font-family: 'Lato', sans-serif;
+	font-weight: bold;
 }
 
 .service-cards {
@@ -230,7 +235,7 @@ header .user-info a {
 }
 
 .about-img img {
-  width: 38.5rem;
+  width: 34rem;
   border-radius: 1rem;
 }
 
@@ -246,7 +251,7 @@ header .user-info a {
 /* ===== CONTACT ===== */
 .contact {
   background: #ffe4ec;
-  padding: 60px 40px;
+  padding: 4.3rem 1rem;
 }
 
 .contact-container {
@@ -260,7 +265,7 @@ header .user-info a {
   background: #ff5c8d;
   color: white;
   padding: 40px;
-  border-radius: 10px;
+  border-radius: 1rem;
   width: 20rem;
 }
 

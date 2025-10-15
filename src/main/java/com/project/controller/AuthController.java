@@ -66,6 +66,11 @@ public class AuthController {
             model.addAttribute("error", "Username already exists.");
             return "/WEB-INF/jsp/register.jsp";
         }
+        // register uniqueness
+        if (userRepo.findByEmail(email).isPresent()) {
+            model.addAttribute("error", "An account with this email already exists.");
+            return "/WEB-INF/jsp/register.jsp";
+        }
 
         // Create PendingUser object and store in session (do NOT save to DB yet)
         PendingUser pending = new PendingUser(username, password, firstName, lastName, gender, age, email, "ROLE_PATIENT");

@@ -19,6 +19,9 @@ public class User implements Serializable {
     private String lastName;
     private String gender;
     private Integer age;
+    
+    @Column(unique = true, nullable = false)
+    
     private String email;
     private String phone;
     private String role; // ROLE_PATIENT, ROLE_ADMIN
