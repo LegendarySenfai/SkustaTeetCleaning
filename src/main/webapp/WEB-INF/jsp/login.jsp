@@ -23,7 +23,7 @@
 <body>
 	<header>
 	  <div class="header-logo">
-	    <img src="${pageContext.request.contextPath}/images/dentallogo.png" alt="Dental Clinic Logo">
+	    <img src="${pageContext.request.contextPath}/images/SkustaTeethLogo.png" alt="Dental Clinic Logo">
 	  </div>
 	  <nav class="header-nav">
 	    <a href="/DentalClinic">Home</a>

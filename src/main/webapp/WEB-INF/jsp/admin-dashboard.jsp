@@ -38,6 +38,7 @@
         </nav>
 
         <!-- === MAIN CONTENT AREA === -->
+
         <main class="admin-main">
             <!-- Appointments Panel -->
             <div id="appointmentsPanel" class="panel active">
@@ -187,6 +188,7 @@
                 </c:choose>
             </div>
         </main>
+
     </div>
 
     <script>

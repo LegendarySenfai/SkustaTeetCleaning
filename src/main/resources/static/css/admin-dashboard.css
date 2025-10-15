@@ -3,6 +3,8 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #f5f7fa;
+    overflow: hidden; /* Prevent body scroll */
+    height: 100vh; /* Full viewport height */
 }
 
 /* ===== ADMIN HEADER (matches main site style) ===== */
@@ -19,10 +21,11 @@ body {
     top: 0;
     width: 100%;
     z-index: 999;
+    box-sizing: border-box;
 }
 
 .admin-header .header-logo img {
-    height: 40px; /* Adjust based on your logo */
+    height: 40px;
     display: block;
 }
 
@@ -54,12 +57,13 @@ body {
 .admin-header .user-info {
     color: #333;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .admin-header .user-info a {
     color: #ff69b4;
     text-decoration: none;
-    margin-left: 8px;
+    margin-right: 1rem;
 }
 
 .admin-header .user-info a:hover {
@@ -70,8 +74,8 @@ body {
 /* Adjust main content to account for fixed header */
 .admin-container {
     display: flex;
-    min-height: calc(100vh - 70px);
-    margin-top: 70px; /* Push content below fixed header */
+    height: calc(100vh - 70px);
+    margin-top: 70px;
 }
 
 /* === Sidebar Tabs === */
@@ -79,6 +83,7 @@ body {
     width: 220px;
     background-color: whitesmoke;
     padding: 20px 0;
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
 }
 
 .tab-label {
@@ -91,7 +96,7 @@ body {
 
 .tab-label:hover {
     background-color: #ff69b4;
-	color: white;
+    color: white;
 }
 
 .tab-label input {
@@ -107,19 +112,32 @@ body {
 .admin-main {
     flex: 1;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
 }
 
 .panel {
-    display: none;
+    display: none; /* Hidden by default */
+    flex: 1;
+    flex-direction: column;
 }
 
 .panel.active {
-    display: block;
+    display: flex; /* Only active panel is shown as flex */
 }
 
-h2 {
+.panel h2 {
     margin-top: 0;
     color: #2c3e50;
+    flex-shrink: 0;
+}
+
+/* Scrollable table container */
+.table-wrapper {
+    flex: 1;
+    overflow: auto;
+    min-height: 0; /* Critical for flex scrolling */
 }
 
 /* === Data Tables === */

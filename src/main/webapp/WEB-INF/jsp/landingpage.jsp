@@ -1,3 +1,5 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,14 +23,14 @@
     <!-- ======= NAVBAR ======= -->
 	<header>
 	  <div class="header-logo">
-	    <img src="${pageContext.request.contextPath}/images/dentallogo.png" alt="Dental Clinic Logo">
+	    <img src="${pageContext.request.contextPath}/images/SkustaTeethLogo.png" alt="Dental Clinic Logo">
 	  </div>
 	  <nav class="header-nav">
-	    <a href="/DentalClinic" class="active">Home</a>
+	    <a href="#home" class="active">Home</a>
 	    <a href="#services">Services</a>
 	    <a href="/book">Book an Appointment</a>
-	    <a href="#contact">Contact Us</a>
 	    <a href="#about">About Us</a>
+	    <a href="#contact">Contact Us</a>
 	  </nav>
 	  <div class="user-info">
 	    <c:choose>
@@ -101,7 +103,7 @@
             </p>
         </div>
         <div class="about-img">
-            <img src="${pageContext.request.contextPath}/images/Team.png" alt="Dental Team">
+            <img src="${pageContext.request.contextPath}/images/NewTeam.jpg" alt="Dental Team">
         </div>
     </section>
 
