@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 
@@ -19,6 +18,9 @@ public class AuthController {
 
     private static final String SESSION_PENDING_REG = "PENDING_REG";
     private static final String SESSION_REG_OTP_ATTEMPTS = "REG_OTP_ATTEMPTS";
+    private static final String SESSION_PWD_EMAIL = "PWD_EMAIL";
+    private static final String SESSION_PWD_OTP_ATTEMPTS = "PWD_OTP_ATTEMPTS";
+    private static final String SESSION_PWD_OTP_VERIFIED = "PWD_OTP_VERIFIED";
 
     @Autowired
     private UserRepository userRepo;
@@ -166,5 +168,166 @@ public class AuthController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
+    }
+    
+    // --- Show email input page ---
+    @GetMapping("/forgot-password")
+    public String showForgotPassword() {
+        return "/WEB-INF/jsp/forgot-password.jsp";
+    }
+
+    // --- Handle email submit: create OTP if email exists ---
+    @PostMapping("/forgot-password")
+    public String handleForgotPassword(@RequestParam String email, Model model, HttpSession session) {
+        if (email == null || email.isBlank()) {
+            model.addAttribute("error", "Please enter your email.");
+            return "/WEB-INF/jsp/forgot-password.jsp";
+        }
+
+        var userOpt = userRepo.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            model.addAttribute("error", "This email is not registered to any account.");
+            return "/WEB-INF/jsp/forgot-password.jsp";
+        }
+
+        // Save email in session and reset attempts and verified flag
+        session.setAttribute(SESSION_PWD_EMAIL, email);
+        session.setAttribute(SESSION_PWD_OTP_ATTEMPTS, 0);
+        session.setAttribute(SESSION_PWD_OTP_VERIFIED, false);
+
+        // Create OTP & send email (include userId)
+        Long userId = userOpt.get().getId();
+        OtpInfo otp = otpService.createAndStoreOtp(session, userId, null, "RESET_PASSWORD");
+        try {
+            emailService.sendOtpEmail(email, "Password reset OTP", "Your password reset OTP is: " + otp.getCode());
+        } catch (Exception ex) {
+            // If sending fails, clear session and show error
+            session.removeAttribute(SESSION_PWD_EMAIL);
+            session.removeAttribute(SESSION_PWD_OTP_ATTEMPTS);
+            session.removeAttribute(SESSION_PWD_OTP_VERIFIED);
+            otpService.removeOtpFromSession(session, null, userId, "RESET_PASSWORD");
+            model.addAttribute("error", "Failed to send OTP. Please try again later.");
+            return "/WEB-INF/jsp/forgot-password.jsp";
+        }
+
+        model.addAttribute("msg", "OTP sent to " + email + ". Enter the code to continue.");
+        model.addAttribute("email", email);
+        return "/WEB-INF/jsp/forgot-password-confirm.jsp";
+    }
+
+    // GET - show confirm OTP page (OTP-only)
+    @GetMapping("/forgot-password/confirm")
+    public String showForgotConfirm(HttpSession session, Model model) {
+        String email = (String) session.getAttribute(SESSION_PWD_EMAIL);
+        if (email != null) model.addAttribute("email", email);
+        return "/WEB-INF/jsp/forgot-password-confirm.jsp";
+    }
+
+    // POST - verify OTP only (no password change here)
+    @PostMapping("/forgot-password/confirm")
+    public String confirmForgotPasswordOtp(@RequestParam String code,
+                                           HttpSession session,
+                                           Model model) {
+        String email = (String) session.getAttribute(SESSION_PWD_EMAIL);
+        if (email == null) {
+            model.addAttribute("error", "No password reset request found. Please start again.");
+            return "/WEB-INF/jsp/forgot-password.jsp";
+        }
+
+        var userOpt = userRepo.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            session.removeAttribute(SESSION_PWD_EMAIL);
+            model.addAttribute("error", "Account not found. Please try again.");
+            return "/WEB-INF/jsp/forgot-password.jsp";
+        }
+        Long userId = userOpt.get().getId();
+
+        // CORRECT parameter order for your OtpService implementation:
+        OtpInfo info = otpService.getOtpFromSession(session, null, userId, "RESET_PASSWORD");
+        Integer attempts = (Integer) session.getAttribute(SESSION_PWD_OTP_ATTEMPTS);
+        if (attempts == null) attempts = 0;
+
+        if (info == null || otpService.isExpired(info) || !info.getCode().equals(code)) {
+            attempts++;
+            session.setAttribute(SESSION_PWD_OTP_ATTEMPTS, attempts);
+            if (attempts >= 3) {
+                // cancel flow
+                session.removeAttribute(SESSION_PWD_EMAIL);
+                session.removeAttribute(SESSION_PWD_OTP_ATTEMPTS);
+                session.removeAttribute(SESSION_PWD_OTP_VERIFIED);
+                otpService.removeOtpFromSession(session, null, userId, "RESET_PASSWORD");
+                model.addAttribute("error", "OTP verification failed 3 times. Please try again.");
+                return "/WEB-INF/jsp/forgot-password.jsp";
+            }
+            model.addAttribute("error", "Invalid or expired OTP. Attempts left: " + (3 - attempts));
+            model.addAttribute("email", email);
+            return "/WEB-INF/jsp/forgot-password-confirm.jsp";
+        }
+
+        // success - mark verified and remove OTP
+        session.setAttribute(SESSION_PWD_OTP_VERIFIED, true);
+        otpService.removeOtpFromSession(session, null, userId, "RESET_PASSWORD");
+
+        // redirect to new-password page
+        return "redirect:/forgot-password/new-password";
+    }
+
+    // GET show new password page (only after OTP verified)
+    @GetMapping("/forgot-password/new-password")
+    public String showNewPasswordForm(HttpSession session, Model model) {
+        Boolean verified = (Boolean) session.getAttribute(SESSION_PWD_OTP_VERIFIED);
+        String email = (String) session.getAttribute(SESSION_PWD_EMAIL);
+        if (verified == null || !verified || email == null) {
+            model.addAttribute("error", "You must verify OTP first.");
+            return "/WEB-INF/jsp/forgot-password.jsp";
+        }
+        model.addAttribute("email", email);
+        return "/WEB-INF/jsp/forgot-password-new.jsp";
+    }
+
+    // POST to actually update password
+    @PostMapping("/forgot-password/new-password")
+    public String handleNewPassword(@RequestParam String newPassword,
+                                    @RequestParam(required = false) String confirmPassword,
+                                    HttpSession session,
+                                    Model model) {
+        Boolean verified = (Boolean) session.getAttribute(SESSION_PWD_OTP_VERIFIED);
+        String email = (String) session.getAttribute(SESSION_PWD_EMAIL);
+        if (verified == null || !verified || email == null) {
+            model.addAttribute("error", "You must verify OTP first.");
+            return "/WEB-INF/jsp/forgot-password.jsp";
+        }
+
+        if (newPassword == null || newPassword.isBlank()) {
+            model.addAttribute("error", "Please enter a new password.");
+            model.addAttribute("email", email);
+            return "/WEB-INF/jsp/forgot-password-new.jsp";
+        }
+        if (confirmPassword != null && !newPassword.equals(confirmPassword)) {
+            model.addAttribute("error", "Password and confirmation do not match.");
+            model.addAttribute("email", email);
+            return "/WEB-INF/jsp/forgot-password-new.jsp";
+        }
+
+        var userOpt = userRepo.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            session.removeAttribute(SESSION_PWD_EMAIL);
+            session.removeAttribute(SESSION_PWD_OTP_ATTEMPTS);
+            session.removeAttribute(SESSION_PWD_OTP_VERIFIED);
+            model.addAttribute("error", "Account not found. Please try again.");
+            return "/WEB-INF/jsp/forgot-password.jsp";
+        }
+
+        var user = userOpt.get();
+        user.setPassword(newPassword); // demo only — plaintext; hash in production
+        userRepo.save(user);
+
+        // cleanup
+        session.removeAttribute(SESSION_PWD_EMAIL);
+        session.removeAttribute(SESSION_PWD_OTP_ATTEMPTS);
+        session.removeAttribute(SESSION_PWD_OTP_VERIFIED);
+
+        model.addAttribute("msg", "Password updated. You can now login with your new password.");
+        return "/WEB-INF/jsp/login.jsp";
     }
 }

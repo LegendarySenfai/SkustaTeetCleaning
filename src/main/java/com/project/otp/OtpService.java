@@ -15,6 +15,7 @@ public class OtpService {
 
     private final Random rand = new Random();
 
+    //Generation of OTP code
     private String generateCode() {
         int code = 100000 + rand.nextInt(900000);
         return String.valueOf(code);

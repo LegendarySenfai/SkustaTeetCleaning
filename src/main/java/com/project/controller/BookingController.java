@@ -78,7 +78,7 @@ public class BookingController {
     }
 
     @PostMapping("/book")
-    public String doBook(@RequestParam Long dentistId,
+    public String doBook(@RequestParam(required = false) Long dentistId,
                          @RequestParam(value = "serviceIds", required = false) List<Long> serviceIds,
                          @RequestParam String date,
                          @RequestParam String time,
@@ -106,7 +106,7 @@ public class BookingController {
         if (serviceIds == null || serviceIds.isEmpty()) errors.add("Select at least one service.");
         if (date == null || date.isBlank()) errors.add("Select a date.");
         if (time == null || time.isBlank()) errors.add("Select a time.");
-        if (dentistId == null) errors.add("Select a dentist.");
+        if (dentistId == null) errors.add("Select a dentist."); // will now be handled here instead of throwing 400
 
         LocalDate d = null;
         LocalTime t = null;
@@ -116,8 +116,11 @@ public class BookingController {
         } catch (Exception ex) { errors.add("Invalid date format."); }
         try { t = LocalTime.parse(time); } catch (Exception ex) { errors.add("Invalid time format."); }
 
-        Dentist dentist = dentistRepo.findById(dentistId).orElse(null);
-        if (dentist == null) errors.add("Selected dentist not found.");
+        Dentist dentist = null;
+        if (dentistId != null) {
+            dentist = dentistRepo.findById(dentistId).orElse(null);
+            if (dentist == null) errors.add("Selected dentist not found.");
+        }
 
         if (!errors.isEmpty()) {
             model.addAttribute("errors", errors);
@@ -127,6 +130,7 @@ public class BookingController {
             return "/WEB-INF/jsp/book.jsp";
         }
 
+        // At this point dentist is non-null and valid
         if (appointmentRepo.existsByDentistAndAppointmentDateAndAppointmentStart(dentist, d, t)) {
             model.addAttribute("errors", List.of("Selected slot is already booked."));
             model.addAttribute("services", serviceRepo.findAll());
@@ -138,7 +142,9 @@ public class BookingController {
         Appointment appt = new Appointment();
         appt.setPatient(patient);
         appt.setDentist(dentist);
-        Set<ServiceEntity> servs = new HashSet<>(serviceRepo.findAllById(serviceIds));
+
+        // make sure serviceIds isn't null (we already validated above)
+        Set<ServiceEntity> servs = new HashSet<>(serviceRepo.findAllById(serviceIds == null ? Collections.emptyList() : serviceIds));
         appt.setServices(servs);
         appt.setAppointmentDate(d);
         appt.setAppointmentStart(t);
@@ -150,6 +156,7 @@ public class BookingController {
         model.addAttribute("appt", appt);
         return "/WEB-INF/jsp/confirm.jsp";
     }
+
 
     @GetMapping("/myappointments")
     public String myAppointments(HttpSession session, Model model) {

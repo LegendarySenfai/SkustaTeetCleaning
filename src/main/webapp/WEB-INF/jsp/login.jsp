@@ -62,6 +62,7 @@
         <p class="signup-text">
           New user? <a href="/register">Sign Up</a>
         </p>
+        <p><a href="${pageContext.request.contextPath}/forgot-password">Forgot your password?</a></p>
       </div>
     </div>
   </div>
