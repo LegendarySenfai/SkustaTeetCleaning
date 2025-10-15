@@ -73,24 +73,22 @@
                                 </c:forEach>
                             </td>
                             <td>${a.status}</td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${a.status != 'CANCELLED'}">
-                                        <a href="/appointments/${a.id}/edit">Update</a>
-                                        |
-                                        <form method="get" action="/appointments/${a.id}/cancel-request" style="display:inline">
-                                            <button type="submit" 
-                                                    class="cancel-btn"
-                                                    onclick="return confirm('Send cancellation OTP to your email?')">
-                                                Cancel
-                                            </button>
-                                        </form>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="empty-action">&nbsp;</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
+							<td>
+							    <c:choose>
+							        <c:when test="${a.status != 'CANCELLED'}">
+							            <a href="/appointments/${a.id}/edit">Update</a>
+							            |
+							            <a href="/appointments/${a.id}/cancel-request"
+							               class="cancel-link"
+							               onclick="return confirm('Send cancellation OTP to your email?')">
+							                Cancel
+							            </a>
+							        </c:when>
+							        <c:otherwise>
+							            <span class="empty-action">&nbsp;</span>
+							        </c:otherwise>
+							    </c:choose>
+							</td>
                         </tr>
                     </c:forEach>
                 </tbody>
