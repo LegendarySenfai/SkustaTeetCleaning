@@ -72,23 +72,24 @@
                                     ${s.name}<br/>
                                 </c:forEach>
                             </td>
-                            <td>${a.status}</td>
+							<td>${a.status}</td>
 							<td>
 							    <c:choose>
-							        <c:when test="${a.status != 'CANCELLED'}">
-							            <a href="/appointments/${a.id}/edit">Update</a>
-							            |
+							        <c:when test="${a.status eq 'PENDING'}">
+							            <a href="/appointments/${a.id}/edit" class="active-link">Update</a> |
 							            <a href="/appointments/${a.id}/cancel-request"
 							               class="cancel-link"
 							               onclick="return confirm('Send cancellation OTP to your email?')">
-							                Cancel
+							               Cancel
 							            </a>
 							        </c:when>
 							        <c:otherwise>
-							            <span class="empty-action">&nbsp;</span>
+							            <span style="color: gray; text-decoration: none;">Update</span> |
+							            <span style="color: gray; text-decoration: none;">Cancel</span>
 							        </c:otherwise>
 							    </c:choose>
 							</td>
+
                         </tr>
                     </c:forEach>
                 </tbody>

@@ -43,6 +43,15 @@
             <!-- Appointments Panel -->
             <div id="appointmentsPanel" class="panel active">
                 <h2>Appointments</h2>
+
+                <!-- New Patient button -->
+                <div style="margin-bottom:8px;">
+                    <a href="${pageContext.request.contextPath}/register" target="_blank" class="btn-new"
+                       style="padding:6px 10px; background:#007bff; color:#fff; text-decoration:none; border-radius:4px;">
+                        New Patient
+                    </a>
+                </div>
+
                 <div class="filter-container">
 				  <label>Filter by:</label>
 				  <select class="column-select">
@@ -70,6 +79,7 @@
                                     <th>Date</th>
                                     <th>Time</th>
                                     <th>Services</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -86,19 +96,29 @@
                                                 ${s.name}<br/>
                                             </c:forEach>
                                         </td>
-                                        <td>
-    <form action="/admin/deleteAppointment" method="post" style="display:inline;">
-        <input type="hidden" name="id" value="${a.id}">
-        <button type="submit" onclick="return confirm('Are you sure you want to delete this appointment?')">Delete</button>
-    </form>
+										<!-- Status column -->
+										<td>
+										    <span style="
+										        <c:choose>
+										            <c:when test='${a.status eq "PENDING"}'>color: orange;</c:when>
+										            <c:when test='${a.status eq "COMPLETED"}'>color: green;</c:when>
+										            <c:when test='${a.status eq "CANCELLED"}'>color: gray;</c:when>
+										            <c:when test='${a.status eq "NO SHOW"}'>color: red;</c:when>
+										            <c:otherwise>color: black;</c:otherwise>
+										        </c:choose>">
+										        ${a.status}
+										    </span>
+										</td>
+										<td>
+                                            <form action="${pageContext.request.contextPath}/admin/deleteAppointment" method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="${a.id}">
+                                                <button type="submit" onclick="return confirm('Are you sure you want to delete this appointment?')">Delete</button>
+                                            </form>
 
-    <form action="/admin/updateAppointment" method="post" style="display:inline;">
-        <input type="hidden" name="id" value="${a.id}">
-        <!-- Optionally include other editable fields -->
-        <button type="submit">Update</button>
-    </form>
-</td>
-                                        
+                                            <!-- Update link opens admin edit page -->
+                                            <a href="/admin/appointments/${a.id}/edit">Update</a>
+
+                                        </td>
                                     </tr>
                                 </c:forEach>
                             </tbody>
@@ -121,7 +141,7 @@
 				    <option value="4">Age</option>
 				  </select>
 				  <input type="text" class="table-filter" placeholder="Type to filter..." />
-				</div>   
+				</div>
                 <c:choose>
                     <c:when test="${empty users}">
                         <p>No patients registered.</p>
@@ -154,18 +174,18 @@
             </div>
 
             <!-- Dentists Panel -->
-            <div id="dentistsPanel" class="panel">          
+            <div id="dentistsPanel" class="panel">
                 <h2>Dentists</h2>
                  <div class="filter-container">
-  <label for="dentistFilter">Filter by:</label>
-  <select class="column-select">
-    <option value="all">All Columns</option>
-    <option value="0">ID</option>
-    <option value="1">Name</option>
-    <option value="2">Specialization</option>
-  </select>
-  <input type="text" class="table-filter" placeholder="Type to filter..." />
-</div>
+                  <label for="dentistFilter">Filter by:</label>
+                  <select class="column-select">
+                    <option value="all">All Columns</option>
+                    <option value="0">ID</option>
+                    <option value="1">Name</option>
+                    <option value="2">Specialization</option>
+                  </select>
+                  <input type="text" class="table-filter" placeholder="Type to filter..." />
+                </div>
                 <c:choose>
                     <c:when test="${empty dentists}">
                         <p>No dentists registered.</p>
@@ -193,7 +213,6 @@
                 </c:choose>
             </div>
         </main>
-
     </div>
 
     <script>
@@ -206,7 +225,7 @@
                     'dentists': 'dentistsPanel'
                 };
                 const targetId = panelMap[this.value];
-                
+
                 // Hide all panels
                 document.querySelectorAll('.panel').forEach(panel => {
                     panel.classList.remove('active');
@@ -216,20 +235,8 @@
             });
         });
     </script>
+
     <script>
-function filterTable(input) {
-    const filterValue = input.value.toLowerCase();
-    const table = input.nextElementSibling.querySelector('table');
-    const rows = table.querySelectorAll('tbody tr');
-
-    rows.forEach(row => {
-        const rowText = row.textContent.toLowerCase();
-        row.style.display = rowText.includes(filterValue) ? '' : 'none';
-    });
-}
-
-</script>
-<script>
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.table-filter').forEach(function(input) {
     input.addEventListener('input', function() {
@@ -249,21 +256,20 @@ function doFilter(input) {
   const filterContainer = input.closest('.filter-container');
   const panel = input.closest('.panel');
   if (!panel) return;
-  
+
   const table = panel.querySelector('table.data-table');
   if (!table) return;
-  
+
   const select = filterContainer.querySelector('.column-select');
   const columnIndex = select.value;
   const query = input.value.trim().toLowerCase();
-  
+
   const rows = table.querySelectorAll('tbody tr');
   rows.forEach(function(row) {
     const cells = row.querySelectorAll('td');
     let match = false;
-    
+
     if (columnIndex === 'all') {
-      // Check entire row
       const rowText = row.textContent.toLowerCase();
       match = rowText.includes(query);
     } else {
@@ -273,12 +279,10 @@ function doFilter(input) {
         match = text.includes(query);
       }
     }
-    
+
     row.style.display = match ? '' : 'none';
   });
 }
-//xdd
 </script>
-
 </body>
 </html>

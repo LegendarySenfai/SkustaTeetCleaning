@@ -29,10 +29,10 @@ public class BookingController {
 
     @GetMapping("/")
     public String home() { return "redirect:/book"; }
-    
+
     @GetMapping("/DentalClinic")
     public String Landingpage() {
-        return "/WEB-INF/jsp/landingpage.jsp"; 
+        return "/WEB-INF/jsp/landingpage.jsp";
     }
 
     @GetMapping("/book")
@@ -88,11 +88,12 @@ public class BookingController {
         if (userId == null) return "redirect:/login";
 
         // Prevent multiple active appointments per user
+        // --- CHANGED: only PENDING (or null) counts as an active appointment that blocks booking.
         List<Appointment> existing = appointmentRepo.findByPatientId(userId);
         boolean hasActive = existing.stream().anyMatch(a -> {
             String s = a.getStatus();
-            if (s == null) return true;
-            return !s.equalsIgnoreCase("CANCELLED") && !s.equalsIgnoreCase("COMPLETED");
+            // treat null as pending (legacy rows), and only "PENDING" blocks booking.
+            return s == null || s.equalsIgnoreCase("PENDING");
         });
         if (hasActive) {
             model.addAttribute("errors", List.of("You already have an active appointment. Cancel or complete it before booking a new one."));
@@ -156,7 +157,6 @@ public class BookingController {
         model.addAttribute("appt", appt);
         return "/WEB-INF/jsp/confirm.jsp";
     }
-
 
     @GetMapping("/myappointments")
     public String myAppointments(HttpSession session, Model model) {
