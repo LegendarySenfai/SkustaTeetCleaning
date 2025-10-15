@@ -87,13 +87,18 @@
                                             </c:forEach>
                                         </td>
                                         <td>
-                                            <form method="post" action="/admin/appointments/${a.id}/delete" style="display:inline;">
-                                                <button type="submit" class="btn-danger" 
-                                                        onclick="return confirm('Delete this appointment permanently?')">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        </td>
+    <form action="/admin/deleteAppointment" method="post" style="display:inline;">
+        <input type="hidden" name="id" value="${a.id}">
+        <button type="submit" onclick="return confirm('Are you sure you want to delete this appointment?')">Delete</button>
+    </form>
+
+    <form action="/admin/updateAppointment" method="post" style="display:inline;">
+        <input type="hidden" name="id" value="${a.id}">
+        <!-- Optionally include other editable fields -->
+        <button type="submit">Update</button>
+    </form>
+</td>
+                                        
                                     </tr>
                                 </c:forEach>
                             </tbody>
@@ -272,9 +277,8 @@ function doFilter(input) {
     row.style.display = match ? '' : 'none';
   });
 }
+//xdd
 </script>
-<!-- Second Push 2 50 PM Oct 15 -->
-<!-- Second Push 2 52 PM Oct 15 -->
-<!-- Second Push 10 30 PM Oct 15 -->
+
 </body>
 </html>
