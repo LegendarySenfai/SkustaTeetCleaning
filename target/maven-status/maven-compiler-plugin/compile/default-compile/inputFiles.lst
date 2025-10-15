@@ -1,16 +1,17 @@
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\controller\AdminController.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\controller\AuthController.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\controller\BookingController.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\DentalClinicApplication.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\model\Appointment.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\model\Dentist.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\model\ServiceEntity.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\model\User.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\otp\EmailService.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\otp\OtpInfo.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\otp\OtpService.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\repository\AppointmentRepository.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\repository\DentistRepository.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\repository\ServiceRepository.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\repository\UserRepository.java
-C:\Users\nesty\Downloads\skusta-teeth-cleaning\skusta-teeth-cleaning\src\main\java\com\project\service\AppointmentService.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\controller\AdminController.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\controller\AuthController.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\controller\BookingController.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\DentalClinicApplication.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\dto\PendingUser.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\model\Appointment.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\model\Dentist.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\model\ServiceEntity.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\model\User.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\otp\EmailService.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\otp\OtpInfo.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\otp\OtpService.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\repository\AppointmentRepository.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\repository\DentistRepository.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\repository\ServiceRepository.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\repository\UserRepository.java
+C:\Users\Christian Dizon\git\SkustaTeetCleaning\src\main\java\com\project\service\AppointmentService.java

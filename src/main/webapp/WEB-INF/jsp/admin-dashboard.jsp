@@ -42,6 +42,19 @@
             <!-- Appointments Panel -->
             <div id="appointmentsPanel" class="panel active">
                 <h2>Appointments</h2>
+                <div class="filter-container">
+				  <label>Filter by:</label>
+				  <select class="column-select">
+				    <option value="all">All Columns</option>
+				    <option value="0">ID</option>
+				    <option value="1">Patient</option>
+				    <option value="2">Dentist</option>
+				    <option value="3">Date</option>
+				    <option value="4">Time</option>
+				    <option value="5">Services</option>
+				  </select>
+				  <input type="text" class="table-filter" placeholder="Type to filter..." />
+				</div>
                 <c:choose>
                     <c:when test="${empty appts}">
                         <p>No appointments found.</p>
@@ -91,6 +104,18 @@
             <!-- Patients Panel -->
             <div id="patientsPanel" class="panel">
                 <h2>Patients</h2>
+                <div class="filter-container">
+				  <label>Filter by:</label>
+				  <select class="column-select">
+				    <option value="all">All Columns</option>
+				    <option value="0">ID</option>
+				    <option value="1">Username</option>
+				    <option value="2">Name</option>
+				    <option value="3">Gender</option>
+				    <option value="4">Age</option>
+				  </select>
+				  <input type="text" class="table-filter" placeholder="Type to filter..." />
+				</div>   
                 <c:choose>
                     <c:when test="${empty users}">
                         <p>No patients registered.</p>
@@ -123,8 +148,18 @@
             </div>
 
             <!-- Dentists Panel -->
-            <div id="dentistsPanel" class="panel">
+            <div id="dentistsPanel" class="panel">          
                 <h2>Dentists</h2>
+                 <div class="filter-container">
+  <label for="dentistFilter">Filter by:</label>
+  <select class="column-select">
+    <option value="all">All Columns</option>
+    <option value="0">ID</option>
+    <option value="1">Name</option>
+    <option value="2">Specialization</option>
+  </select>
+  <input type="text" class="table-filter" placeholder="Type to filter..." />
+</div>
                 <c:choose>
                     <c:when test="${empty dentists}">
                         <p>No dentists registered.</p>
@@ -174,5 +209,68 @@
             });
         });
     </script>
+    <script>
+function filterTable(input) {
+    const filterValue = input.value.toLowerCase();
+    const table = input.nextElementSibling.querySelector('table');
+    const rows = table.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+        const rowText = row.textContent.toLowerCase();
+        row.style.display = rowText.includes(filterValue) ? '' : 'none';
+    });
+}
+
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.table-filter').forEach(function(input) {
+    input.addEventListener('input', function() {
+      doFilter(input);
+    });
+  });
+
+  document.querySelectorAll('.column-select').forEach(function(select) {
+    select.addEventListener('change', function() {
+      const input = select.closest('.filter-container').querySelector('.table-filter');
+      doFilter(input);
+    });
+  });
+});
+
+function doFilter(input) {
+  const filterContainer = input.closest('.filter-container');
+  const panel = input.closest('.panel');
+  if (!panel) return;
+  
+  const table = panel.querySelector('table.data-table');
+  if (!table) return;
+  
+  const select = filterContainer.querySelector('.column-select');
+  const columnIndex = select.value;
+  const query = input.value.trim().toLowerCase();
+  
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach(function(row) {
+    const cells = row.querySelectorAll('td');
+    let match = false;
+    
+    if (columnIndex === 'all') {
+      // Check entire row
+      const rowText = row.textContent.toLowerCase();
+      match = rowText.includes(query);
+    } else {
+      const cell = cells[parseInt(columnIndex)];
+      if (cell) {
+        const text = cell.textContent.toLowerCase();
+        match = text.includes(query);
+      }
+    }
+    
+    row.style.display = match ? '' : 'none';
+  });
+}
+</script>
+<!-- Second Push 2 50 PM Oct 15 -->
 </body>
 </html>
