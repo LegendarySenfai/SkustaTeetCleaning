@@ -308,6 +308,11 @@ public class AuthController {
             model.addAttribute("email", email);
             return "/WEB-INF/jsp/forgot-password-new.jsp";
         }
+        if (newPassword.length()<8 || newPassword.isBlank()) {
+            model.addAttribute("error", "Please enter a new password.");
+            model.addAttribute("email", email);
+            return "/WEB-INF/jsp/forgot-password-new.jsp";
+        }
         if (confirmPassword != null && !newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "Password and confirmation do not match.");
             model.addAttribute("email", email);
