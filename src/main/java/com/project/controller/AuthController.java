@@ -70,6 +70,10 @@ public class AuthController {
             model.addAttribute("error", "Age should be between 0 and 200.");
             return "/WEB-INF/jsp/register.jsp";
         }
+        if (password.length()<8) {
+            model.addAttribute("error", "Password should be 8 characters or longer");
+            return "/WEB-INF/jsp/register.jsp";
+        }
         // Username uniqueness check against DB
         if (userRepo.findByUsername(username).isPresent()) {
             model.addAttribute("error", "Username already exists.");
@@ -314,6 +318,11 @@ public class AuthController {
 
         if (newPassword == null || newPassword.isBlank()) {
             model.addAttribute("error", "Please enter a new password.");
+            model.addAttribute("email", email);
+            return "/WEB-INF/jsp/forgot-password-new.jsp";
+        }
+        if (newPassword.length()<8 || newPassword.isBlank()) {
+            model.addAttribute("error", "Password must be 8 characters or more");
             model.addAttribute("email", email);
             return "/WEB-INF/jsp/forgot-password-new.jsp";
         }

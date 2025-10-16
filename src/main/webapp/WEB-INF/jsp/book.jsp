@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Book Appointment</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/appointment.css">	
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/appointment.css">    
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,18 +22,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-	<header>
-	  <div class="header-left">
-	    <div class="logo">
-	      <img src="${pageContext.request.contextPath}/images/SkustaTeethLogo.png" alt="Dental Clinic Logo">
-	    </div>
-	    <nav>
-	      <a class="homer" href="/SkustaTeeth">Home</a>
-	      <a class="boker active" href="/book">Book an Appointment</a>
-	      <a class="apointer" href="/myappointments">My Appointments</a>
-	    </nav>
-	  </div>
-	  <div class="user-info">
+    <header>
+      <div class="header-left">
+        <div class="logo">
+          <img src="${pageContext.request.contextPath}/images/SkustaTeethLogo.png" alt="Dental Clinic Logo">
+        </div>
+        <nav>
+          <a class="homer" href="/SkustaTeeth">Home</a>
+          <a class="boker active" href="/book">Book an Appointment</a>
+          <a class="apointer" href="/myappointments">My Appointments</a>
+        </nav>
+      </div>
+      <div class="user-info">
   <c:choose>
     <c:when test="${not empty sessionScope.username}">
       <div class="dropdown">
@@ -111,8 +111,8 @@
   display: block;
 }
 </style>
-	  
-	</header>
+      
+    </header>
 
     <c:if test="${not empty errors}">
         <ul class="error-list">
@@ -138,7 +138,7 @@
 
             <label>
                 <span class="label-text">Services:</span>
-                <div class="services-grid">
+                <div class="services-grid" id="servicesArea">
                     <c:forEach var="s" items="${services}">
                         <label class="service-item">
                             <input type="checkbox" name="serviceIds" value="${s.id}" /> ${s.name}
@@ -161,87 +161,103 @@
         </form>
     </main>
 
-	<script>
-	    let timeSlotsLoaded = false; // Track if we've already fetched time slots
-	    let currentTimesHtml = '';   // Cache the generated HTML
+    <script>
+        // --- new behavior: disable past slots (and occupied slots remain disabled) ---
+        // cache keyed by date + dentist to avoid stale disabled state
+        let cacheHtml = '';
+        let cacheDate = '';
+        let cacheDent = '';
 
-	    function buildRadioHtml(time, ok) {
-	        var disabledAttr = ok ? '' : 'disabled';
-	        var className = ok ? 'time-item' : 'time-item disabled';
-	        return '<label class="' + className + '">' +
-	               '<input type="radio" name="timeRadio" value="' + time + '" ' + disabledAttr + '/> ' +
-	               time +
-	               '</label>';
-	    }
-		
-		function formatTo12Hour(time24) {
-		    const [hours, minutes] = time24.split(':').map(Number);
-		    const period = hours >= 12 ? 'PM' : 'AM';
-		    const hours12 = hours % 12 || 12; 
-		    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-		}
+        function parseTimeToDate(dateStr, timeStr) {
+            // dateStr - "YYYY-MM-DD", timeStr - "HH:mm" (24h)
+            if (!dateStr || !timeStr) return null;
+            const hhmm = timeStr.split(':');
+            const hh = hhmm[0].padStart(2,'0');
+            const mm = (hhmm.length>1)?hhmm[1].padStart(2,'0'):'00';
+            return new Date(dateStr + 'T' + hh + ':' + mm + ':00');
+        }
 
-	    document.getElementById('showTimesBtn').addEventListener('click', async function () {
-	        const timesArea = document.getElementById('timesArea');
-			const isCurrentlyVisible = getComputedStyle(timesArea).display !== 'none';
+        function isSlotInPast(dateStr, timeStr) {
+            const slot = parseTimeToDate(dateStr, timeStr);
+            if (!slot) return false;
+            // treat slot <= now as in the past (can't pick)
+            return slot.getTime() <= Date.now();
+        }
 
-	        if (isCurrentlyVisible) {
-	            // Close: hide the time slots
-	            timesArea.style.display = 'none';
-	            this.textContent = 'Select your preferred time';
-	            return;
-	        }
+        function buildRadioHtml(time, available, selDate) {
+            const occupied = (available !== 'true');
+            const past = isSlotInPast(selDate, time);
+            const disabled = occupied || past;
+            const disabledAttr = disabled ? 'disabled' : '';
+            const css = disabled ? 'opacity:0.55; cursor:not-allowed; margin-right:8px;' : 'margin-right:8px;';
+            return '<label style="' + css + '">' +
+                   '<input type="radio" name="timeRadio" value="' + time + '" ' + disabledAttr + '/> ' +
+                   time +
+                   '</label>';
+        }
 
-	        // Open: show time slots
-	        var date = document.getElementById('dateInput').value;
-	        if (!date) {
-	            alert('Please pick a date first.');
-	            return;
-	        }
+        async function fetchTimesFor(date) {
+            const dentistId = document.getElementById('dentistSelect').value || '';
+            const url = '/api/available?date=' + encodeURIComponent(date) + '&dentistId=' + encodeURIComponent(dentistId);
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(resp.statusText);
+            const slots = await resp.json();
+            let html = '';
+            slots.forEach(s => {
+                const [time, available] = s.split('|');
+                html += buildRadioHtml(time, available, date);
+            });
+            return html;
+        }
 
-	        // If not loaded yet, fetch and cache
-	        if (!timeSlotsLoaded) {
-	            var dentistId = document.getElementById('dentistSelect').value;
-	            var url = '/api/available?date=' + encodeURIComponent(date) + '&dentistId=' + (dentistId || '');
-	            
-	            try {
-	                const response = await fetch(url);
-	                if (!response.ok) {
-	                    throw new Error(response.statusText);
-	                }
-	                const timeSlots = await response.json();
+        const showBtn = document.getElementById('showTimesBtn');
+        const timesArea = document.getElementById('timesArea');
+        const dateInput = document.getElementById('dateInput');
+        const dentistSelect = document.getElementById('dentistSelect');
 
-	                currentTimesHtml = '';
-	                timeSlots.forEach(function(slot) {
-	                    const [time, available] = slot.split('|');
-	                    const isAvailable = available === 'true';
-	                    currentTimesHtml += buildRadioHtml(time, isAvailable);
-	                });
+        function attachChangeHandler() {
+            timesArea.querySelectorAll('input[name="timeRadio"]').forEach(r => {
+                r.addEventListener('change', function(e){
+                    document.getElementById('timeInput').value = e.target.value;
+                });
+            });
+        }
 
-	                timeSlotsLoaded = true;
-	            } catch (err) {
-	                console.error('Error fetching available times:', err);
-	                alert('Failed to load available times. Please try again.');
-	                return;
-	            }
-	        }
+        showBtn.addEventListener('click', async function () {
+            const isCurrentlyVisible = getComputedStyle(timesArea).display !== 'none';
+            if (isCurrentlyVisible) {
+                timesArea.style.display = 'none';
+                this.textContent = 'Select your preferred time';
+                return;
+            }
 
-	        // Show cached or newly fetched content
-	        timesArea.innerHTML = currentTimesHtml;
-	        timesArea.style.display = 'grid'; // matches your .time-grid display
-	        this.textContent = 'Hide available times';
+            const date = dateInput.value;
+            if (!date) {
+                alert('Please pick a date first.');
+                return;
+            }
 
-	        // Ensure the change listener is attached (only once is enough, but safe to reattach)
-	        const handleChange = function(e) {
-	            if (e.target && e.target.name === 'timeRadio') {
-	                document.getElementById('timeInput').value = e.target.value;
-	            }
-	        };
+            try {
+                // cache keyed by date & dentist
+                if (!cacheHtml || cacheDate !== date || cacheDent !== dentistSelect.value) {
+                    cacheHtml = await fetchTimesFor(date);
+                    cacheDate = date;
+                    cacheDent = dentistSelect.value;
+                }
+                timesArea.innerHTML = cacheHtml;
+                timesArea.style.display = 'grid';
+                this.textContent = 'Hide available times';
+                attachChangeHandler();
+            } catch (err) {
+                console.error('Error fetching available times:', err);
+                alert('Failed to load available times. Please try again.');
+                return;
+            }
+        });
 
-	        // Remove previous listener to avoid duplicates, then add
-	        timesArea.removeEventListener('change', handleChange);
-	        timesArea.addEventListener('change', handleChange);
-	    });
-	</script>
+        // clear cache when dentist or date changes
+        dentistSelect.addEventListener('change', function(){ cacheHtml = ''; cacheDent = dentistSelect.value; timesArea.style.display = 'none'; showBtn.textContent='Select your preferred time'; });
+        dateInput.addEventListener('change', function(){ cacheHtml = ''; cacheDate = ''; timesArea.style.display = 'none'; showBtn.textContent='Select your preferred time'; });
+    </script>
 </body>
 </html>

@@ -89,81 +89,129 @@
         </form>
     </main>
 
-    <!-- ✅ SCRIPT: COPY OF BOOK.JSP, WITH MINIMAL EDIT FOR PRE-SELECTION -->
+    <!-- Script: only affects time slots + service checkbox disabling when date is in the past.
+         Keeps fonts/markup untouched. -->
     <script>
-        let timeSlotsLoaded = false;
-        let currentTimesHtml = '';
-        const initialTime = "${appt.appointmentStart}"; // Pre-selected time
+    (function() {
+        const showBtn = document.getElementById('showTimesBtn');
+        const timesArea = document.getElementById('timesArea');
+        const dateInput = document.getElementById('dateInput');
+        const dentistSelect = document.getElementById('dentistSelect');
+        const timeInput = document.getElementById('timeInput');
+        const serviceCheckboxes = Array.from(document.querySelectorAll('input[name="serviceIds"]'));
+        const initialTime = '<c:out value="${appt.appointmentStart}" />'; // server-side value
 
-        function buildRadioHtml(time, ok) {
-            var disabledAttr = ok ? '' : 'disabled';
-            var checkedAttr = (time === initialTime) ? 'checked' : '';
-            var className = ok ? 'time-item' : 'time-item disabled';
-            return '<label class="' + className + '">' +
+        function parseToLocalDate(dateStr, timeStr) {
+            if (!dateStr || !timeStr) return null;
+            const [hhRaw, mmRaw] = timeStr.split(':');
+            const hh = String(hhRaw).padStart(2, '0');
+            const mm = String(mmRaw || '00').padStart(2, '0');
+            return new Date(dateStr + 'T' + hh + ':' + mm + ':00');
+        }
+
+        function isSlotInPast(dateStr, timeStr) {
+            const dt = parseToLocalDate(dateStr, timeStr);
+            if (!dt) return false;
+            // slot <= now considered past/unselectable
+            return dt.getTime() <= Date.now();
+        }
+
+        function isDateStrictlyBeforeToday(dateStr) {
+            if (!dateStr) return false;
+            const parts = dateStr.split('-'); // YYYY-MM-DD
+            const d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+            const today = new Date();
+            const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            return d.getTime() < todayStart.getTime();
+        }
+
+        function buildSlotLabel(time, available, selDate) {
+            const occupied = (available !== 'true');
+            const past = isSlotInPast(selDate, time);
+            const disabled = occupied || past;
+            const disabledAttr = disabled ? 'disabled' : '';
+            const style = disabled ? 'opacity:0.55; cursor:not-allowed; margin-right:8px;' : 'margin-right:8px;';
+            const checkedAttr = (!disabled && time === initialTime) ? 'checked' : '';
+            return '<label style="' + style + '">' +
                    '<input type="radio" name="timeRadio" value="' + time + '" ' + disabledAttr + ' ' + checkedAttr + '/> ' +
                    time +
                    '</label>';
         }
 
-        document.getElementById('showTimesBtn').addEventListener('click', async function () {
-            const timesArea = document.getElementById('timesArea');
-			const isCurrentlyVisible = getComputedStyle(timesArea).display !== 'none';
+        async function fetchSlotsFor(date) {
+            const dentistId = dentistSelect.value || '';
+            const url = '/api/available?date=' + encodeURIComponent(date) + '&dentistId=' + encodeURIComponent(dentistId);
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error('Network response was not ok');
+            const slots = await resp.json();
+            let html = '';
+            slots.forEach(s => {
+                const [time, available] = s.split('|');
+                html += buildSlotLabel(time, available, date);
+            });
+            return html;
+        }
 
-            if (isCurrentlyVisible) {
+        function attachRadiosListener() {
+            timesArea.querySelectorAll('input[name="timeRadio"]').forEach(r => {
+                r.addEventListener('change', function(e) {
+                    timeInput.value = e.target.value;
+                });
+            });
+        }
+
+        function updateServiceCheckboxes(dateStr) {
+            const disable = isDateStrictlyBeforeToday(dateStr);
+            serviceCheckboxes.forEach(cb => {
+                cb.disabled = disable;
+                cb.style.opacity = disable ? '0.55' : '';
+                cb.style.cursor = disable ? 'not-allowed' : '';
+            });
+        }
+
+        showBtn.addEventListener('click', async function() {
+            const selDate = dateInput.value;
+            if (!selDate) { alert('Please pick a date first.'); return; }
+
+            // toggle
+            if (timesArea.style.display === 'block') {
                 timesArea.style.display = 'none';
-                this.textContent = 'Select your preferred time';
+                showBtn.textContent = 'Select your preferred time';
                 return;
             }
 
-            var date = document.getElementById('dateInput').value;
-            if (!date) {
-                alert('Please pick a date first.');
-                return;
+            try {
+                const html = await fetchSlotsFor(selDate);
+                timesArea.innerHTML = html;
+                timesArea.style.display = 'grid';
+                showBtn.textContent = 'Hide available times';
+                attachRadiosListener();
+
+                // if the initialTime was checked in the generated HTML it will set hidden input accordingly
+                const chosen = timesArea.querySelector('input[name="timeRadio"]:checked');
+                if (chosen) timeInput.value = chosen.value;
+            } catch (err) {
+                console.error('Failed to load times', err);
+                alert('Failed to load available times. Please try again.');
             }
-
-            var dentistId = document.getElementById('dentistSelect').value;
-            if (!dentistId) {
-                alert('Please select a dentist first.');
-                return;
-            }
-
-            if (!timeSlotsLoaded) {
-                var url = '/api/available?date=' + encodeURIComponent(date) + '&dentistId=' + encodeURIComponent(dentistId);
-                try {
-                    const response = await fetch(url);
-                    if (!response.ok) {
-                        throw new Error(response.statusText);
-                    }
-                    const timeSlots = await response.json();
-
-                    currentTimesHtml = '';
-                    timeSlots.forEach(function(slot) {
-                        const [time, available] = slot.split('|');
-                        const isAvailable = available === 'true';
-                        currentTimesHtml += buildRadioHtml(time, isAvailable);
-                    });
-
-                    timeSlotsLoaded = true;
-                } catch (err) {
-                    console.error('Error fetching available times:', err);
-                    alert('Failed to load available times. Please try again.');
-                    return;
-                }
-            }
-
-            timesArea.innerHTML = currentTimesHtml;
-            timesArea.style.display = 'grid';
-            this.textContent = 'Hide available times';
-
-            const handleChange = function(e) {
-                if (e.target && e.target.name === 'timeRadio') {
-                    document.getElementById('timeInput').value = e.target.value;
-                }
-            };
-
-            timesArea.removeEventListener('change', handleChange);
-            timesArea.addEventListener('change', handleChange);
         });
+
+        // Hide time area and update services when dentist/date changes
+        dentistSelect.addEventListener('change', function() {
+            timesArea.style.display = 'none';
+            showBtn.textContent = 'Select your preferred time';
+        });
+        dateInput.addEventListener('change', function() {
+            timesArea.style.display = 'none';
+            showBtn.textContent = 'Select your preferred time';
+            updateServiceCheckboxes(this.value);
+        });
+
+        // initial state on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (dateInput.value) updateServiceCheckboxes(dateInput.value);
+        });
+    })();
     </script>
 </body>
 </html>
