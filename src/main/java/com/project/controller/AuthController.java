@@ -335,4 +335,44 @@ public class AuthController {
         model.addAttribute("msg", "Password updated. You can now login with your new password.");
         return "/WEB-INF/jsp/login.jsp";
     }
+ // === ACCOUNT DELETE ===
+
+    @GetMapping("/account-delete")
+    public String showDeleteAccountPage(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+        return "/WEB-INF/jsp/account-delete.jsp";
+    }
+
+    @PostMapping("/account-delete")
+    public String handleDeleteAccount(@RequestParam String password, HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        Optional<User> userOpt = userRepo.findById(userId);
+        if (userOpt.isEmpty()) {
+            session.invalidate();
+            return "redirect:/login";
+        }
+
+        User user = userOpt.get();
+        if (!user.getPassword().equals(password)) {
+            model.addAttribute("error", "Incorrect password. Please try again.");
+            return "/WEB-INF/jsp/account-delete.jsp";
+        }
+
+        // Delete account
+        userRepo.deleteById(userId);
+        session.invalidate(); // logout user
+
+        model.addAttribute("msg", "Your account has been deleted successfully.");
+        
+        
+        return "redirect:/login?status=deleted";
+    }
+
 }
