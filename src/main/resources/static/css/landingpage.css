@@ -1,3 +1,4 @@
+/* ==== GLOBAL RESET ==== */
 * {
   margin: 0;
   padding: 0;
@@ -6,25 +7,31 @@
   font-family: "Poppins", sans-serif;
 }
 
+html {
+  font-size: 100%; /* 1rem = 16px */
+  scroll-behavior: smooth;
+}
+
 body {
   color: #000;
 }
 
-btn {
-	font-family: 'Lato', sans-serif;
-	font-weight: bold;
+/* ==== BUTTON STYLE ==== */
+.btn {
+  font-family: 'Lato', sans-serif;
+  font-weight: bold;
 }
 
 /* ===== NAV SECTION ===== */
 header {
   background-color: white;
   color: #333;
-  height: 70px;
+  height: 4.375rem; /* 70px */
   padding: 0 2rem;
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
   position: fixed;
   top: 0;
   width: 100%;
@@ -32,8 +39,8 @@ header {
 }
 
 header .header-logo img {
-	height: 5.5rem;
-	display: block;
+  height: 5.5rem;
+  display: block;
 }
 
 header .header-nav {
@@ -41,27 +48,24 @@ header .header-nav {
   align-items: center;
   gap: 1.5rem;
   justify-content: center;
-  
 }
 
 header .header-nav a {
   color: #ff69b4;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 900;
   padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   transition: background-color 0.2s, color 0.2s;
   font-family: 'Lato', sans-serif;
-  font-weight: 900;
 }
 
 header .header-nav a:hover,
 header .header-nav a.active {
   color: #ff1493;
-
 }
 
-/* User Info */
+/* ==== USER INFO ==== */
 header .user-info {
   color: #555;
   font-size: 0.95rem;
@@ -76,29 +80,29 @@ header .user-info a {
   text-decoration: underline;
   margin-left: 0;
 }
+
 /* ===== HERO SECTION ===== */
 .hero {
   margin-top: 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 80px;
+  padding: 5rem;
   flex-wrap: wrap;
 }
 
 .hero-content {
   flex: 1;
-  min-width: 300px;
+  min-width: 18.75rem; /* 300px */
 }
 
 .hero-content h1 {
   font-size: 4rem;
   font-family: "Playfair Display", serif;
   font-weight: 400;
-  line-height: 1.2;
-  text-align: justify;
-  text-justify: inter-word; 
   line-height: 1.3;
+  text-align: justify;
+  text-justify: inter-word;
   letter-spacing: -0.05em;
   word-spacing: 1rem;
 }
@@ -108,9 +112,9 @@ header .user-info a {
 }
 
 .hero-content p {
-  margin: 20px 0;
+  margin: 1.25rem 0;
   color: #555;
-  max-width: 500px;
+  max-width: 31.25rem; /* 500px */
   font-family: 'Lato', sans-serif;
   font-weight: 400;
 }
@@ -118,15 +122,13 @@ header .user-info a {
 .btn {
   background: #ff5c8d;
   color: white;
-  padding: 12px 25px;
-  border-radius: 25px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1.5rem;
   text-decoration: none;
   display: inline-block;
   transition: 0.3s;
   border: none;
   cursor: pointer;
-  font-family: 'Lato', sans-serif;
-  font-weight: bold;
 }
 
 .btn:hover {
@@ -142,83 +144,83 @@ header .user-info a {
 .services {
   text-align: center;
   padding: 2.5rem 5rem 5rem 5rem;
-  background-color: #fafafa; /* Optional: soft background */
+  background-color: #fafafa;
 }
 
 .services h2 {
   font-family: "Playfair Display", serif;
   font-weight: 400;
   font-size: 3rem;
-  margin-bottom: 20px;
-  color: rgb(0, 0, 0);
+  margin-bottom: 1.25rem;
+  color: #000;
 }
 
 .services a {
-	font-family: 'Lato', sans-serif;
-	font-weight: bold;
+  font-family: 'Lato', sans-serif;
+  font-weight: bold;
 }
 
 .service-cards {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 25px;
-  margin: 30px 0;
+  gap: 1.5625rem; /* 25px */
+  margin: 1.875rem 0;
 }
 
 .card {
   background: #fff;
-  border-radius: 15px;
-  width: 180px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden; /* Ensures images don’t spill out */
+  border-radius: 0.9375rem; /* 15px */
+  width: 11.25rem; /* 180px */
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+  overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 280px; /* Ensures all cards same height */
+  min-height: 17.5rem; /* 280px */
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-0.3125rem);
+  box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.12);
 }
 
 .card img {
   width: 100%;
-  height: 180px; /* Fixed height for consistent look */
-  object-fit: cover; /* Prevents distortion */
-  border-radius: 15px 15px 0 0; /* Rounded top only */
+  height: 11.25rem;
+  object-fit: cover;
+  border-radius: 0.9375rem 0.9375rem 0 0;
 }
 
 .card p {
-  margin: 15px 0;
-  font-size: 14px;
+  margin: 0.9375rem 0;
+  font-size: 0.875rem;
   font-weight: 500;
   color: #333;
   text-align: center;
-  padding: 0 10px;
+  padding: 0 0.625rem;
   line-height: 1.4;
 }
 
 /* ===== ABOUT ===== */
 .about {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0.5rem 5rem 5rem 5rem;
-	flex-wrap: wrap;
-	gap: 4rem; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 5rem 5rem 5rem;
+  flex-wrap: wrap;
+  gap: 4rem;
 }
 
 .about-text {
   flex: 1;
-  min-width: 300px;
+  min-width: 18.75rem;
 }
 
 .about-text .highlight {
-	font-family: "Playfair Display", serif;
-	font-weight: 700;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
 }
 
 .about-text h2 {
@@ -230,8 +232,8 @@ header .user-info a {
 }
 
 .about-text h3 {
-	font-family: "Playfair Display", serif;
-	font-weight: 700;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
 }
 
 .about-img img {
@@ -240,12 +242,12 @@ header .user-info a {
 }
 
 .about-text p {
-	text-align: justify;
-	text-justify: inter-word; 
-	line-height: 1.4; 
-	margin-bottom: 1rem; 
-	font-family: "Lato", sans-serif;
-	font-weight: 400;
+  text-align: justify;
+  text-justify: inter-word;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
 }
 
 /* ===== CONTACT ===== */
@@ -258,41 +260,42 @@ header .user-info a {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 40px;
+  gap: 2.5rem;
 }
 
 .contact-info {
   background: #ff5c8d;
   color: white;
-  padding: 40px;
+  padding: 2.5rem;
   border-radius: 1rem;
   width: 20rem;
 }
 
 .contact-info i {
-  margin-right: 10px;
+  margin-right: 0.625rem;
 }
 
 .contact-form {
   background: #fff;
-  padding: 40px;
-  border-radius: 10px;
-  width: 400px;
+  padding: 2.5rem;
+  border-radius: 0.625rem;
+  width: 25rem;
 }
 
 .contact-form input,
 .contact-form textarea {
   width: 100%;
-  margin: 10px 0;
-  padding: 12px;
+  margin: 0.625rem 0;
+  padding: 0.75rem;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 
 .contact-form button {
-  margin-top: 10px;
+  margin-top: 0.625rem;
 }
 
+/* ===== DROPDOWN ===== */
 .dropdown {
   position: relative;
   display: inline-block;
@@ -308,7 +311,7 @@ header .user-info a {
 }
 
 .dropbtn i {
-  margin-left: 5px;
+  margin-left: 0.3125rem;
 }
 
 .dropdown-content {
@@ -316,15 +319,15 @@ header .user-info a {
   position: absolute;
   right: 0;
   background-color: white;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  min-width: 10rem;
+  box-shadow: 0px 0.5rem 1rem rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 
 .dropdown-content a {
   color: #333;
-  padding: 10px 16px;
+  padding: 0.625rem 1rem;
   text-decoration: none;
   display: block;
 }
@@ -340,8 +343,8 @@ header .user-info a {
 /* ===== FOOTER ===== */
 footer {
   text-align: center;
-  padding: 20px;
+  padding: 1.25rem;
   background: #fff;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #888;
 }

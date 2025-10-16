@@ -52,68 +52,6 @@
   </c:choose>
 </div>
 
-<script>
-  // Delete Account confirmation
-  document.addEventListener('DOMContentLoaded', function() {
-    const deleteLink = document.getElementById('deleteAccountLink');
-    if (deleteLink) {
-      deleteLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (confirm("Are you sure you want to delete your account?")) {
-          window.location.href = "${pageContext.request.contextPath}/account-delete";
-        }
-      });
-    }
-  });
-</script>
-
-<style>
-/* Simple dropdown styling */
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropbtn {
-  background-color: transparent;
-  color: #333;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  font-family: 'Lato', sans-serif;
-}
-
-.dropbtn i {
-  margin-left: 5px;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: white;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-  z-index: 1000;
-  border-radius: 8px;
-}
-
-.dropdown-content a {
-  color: #333;
-  padding: 10px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-content a:hover {
-  background-color: #f1f1f1;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-</style>
-        
     </header>
 
     <main>
@@ -122,8 +60,9 @@
     </main>
 
     <!-- Appointments Table -->
-    <c:if test="${not empty appointments}">
+    <c:if test="${not empty appointments}">		
         <div class="appointments-table-container">
+			<div class="appointments-table-wrapper">
             <table class="appointments-table">
                 <thead>
                     <tr>
@@ -171,6 +110,7 @@
                 </tbody>
             </table>
         </div>
+	</div>
     </c:if>
 
     <!-- No appointments message -->
@@ -187,6 +127,21 @@
     <div class="appointments-table-container" style="text-align: center; margin-top: 20px;">
         <p><a href="/book" class="back-link">← Back to Booking</a></p>
     </div>
+	
+	<script>
+	  // Delete Account confirmation
+	  document.addEventListener('DOMContentLoaded', function() {
+	    const deleteLink = document.getElementById('deleteAccountLink');
+	    if (deleteLink) {
+	      deleteLink.addEventListener('click', function(e) {
+	        e.preventDefault();
+	        if (confirm("Are you sure you want to delete your account?")) {
+	          window.location.href = "${pageContext.request.contextPath}/account-delete";
+	        }
+	      });
+	    }
+	  });
+	</script>
 
 </body>
 </html>

@@ -321,6 +321,50 @@ form button:hover {
 	text-decoration: underline;
 }
 
+/* === Responsive Scrollable Appointments Table === */
+.appointments-table-wrapper {
+  max-height: 17rem; /* fits roughly 4 rows before scrolling */
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+  scroll-behavior: smooth;
+}
+
+/* Keep table header fixed when scrolling */
+.appointments-table-wrapper table {
+  border-collapse: collapse;
+  width: 100%;
+  border-radius: 0.5rem;
+}
+
+.appointments-table-wrapper thead th {
+  position: sticky;
+  top: 0;
+  background-color: #ff69b4;
+  color: white;
+  z-index: 2;
+}
+
+/* Scrollbar styling */
+.appointments-table-wrapper::-webkit-scrollbar {
+  width: 0.6rem;
+}
+
+.appointments-table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 1rem;
+}
+
+.appointments-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 105, 180, 0.8);
+}
+
+.appointments-table-wrapper::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+
 .back-link {
   display: inline-block;
   margin-top: 1.5rem;
@@ -332,4 +376,70 @@ form button:hover {
 
 .back-link:hover {
   text-decoration: underline;
+}
+
+/* Simple dropdown styling */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  background-color: transparent;
+  color: #333;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-family: 'Lato', sans-serif;
+}
+
+.dropbtn i {
+  margin-left: 5px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1000;
+  border-radius: 8px;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* === Responsive tweaks === */
+@media (max-width: 768px) {
+  .appointments-table th,
+  .appointments-table td {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  main h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .appointments-table th,
+  .appointments-table td {
+    font-size: 0.85rem;
+    padding: 0.4rem;
+  }
 }
