@@ -36,8 +36,84 @@
             </nav>
         </div>
         <div class="user-info">
-            Welcome, ${sessionScope.username} | <a href="/logout">Logout</a>
+  <c:choose>
+    <c:when test="${not empty sessionScope.username}">
+      <div class="dropdown">
+        <button class="dropbtn">Hi, ${sessionScope.username} <i class="fa fa-caret-down"></i></button>
+        <div class="dropdown-content">
+          <a href="${pageContext.request.contextPath}/logout">Logout</a>
+          <a href="#" id="deleteAccountLink">Delete Account</a>
         </div>
+      </div>
+    </c:when>
+    <c:otherwise>
+      <a href="${pageContext.request.contextPath}/login">Login</a>
+    </c:otherwise>
+  </c:choose>
+</div>
+
+<script>
+  // Delete Account confirmation
+  document.addEventListener('DOMContentLoaded', function() {
+    const deleteLink = document.getElementById('deleteAccountLink');
+    if (deleteLink) {
+      deleteLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm("Are you sure you want to delete your account?")) {
+          window.location.href = "${pageContext.request.contextPath}/account-delete";
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+/* Simple dropdown styling */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  background-color: transparent;
+  color: #333;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-family: 'Lato', sans-serif;
+}
+
+.dropbtn i {
+  margin-left: 5px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1000;
+  border-radius: 8px;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+</style>
+        
     </header>
 
     <main>

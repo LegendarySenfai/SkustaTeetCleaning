@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,6 +22,29 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
+<div class="container">
+    <%-- show success / info messages passed via query param --%>
+    <c:choose>
+      <c:when test="${param.status == 'deleted'}">
+        <div class="alert success">Your account has been deleted successfully. We're sorry to see you go.</div>
+      </c:when>
+      <c:when test="${param.status == 'password_changed'}">
+        <div class="alert success">Password updated. You can now login with your new password.</div>
+      </c:when>
+      <c:otherwise/>
+    </c:choose>
+
+    <%-- existing login form / messages here --%>
+    <c:if test="${not empty error}">
+      <div class="alert error"><c:out value="${error}"/></div>
+    </c:if>
+
+    <c:if test="${not empty msg}">
+      <div class="alert info"><c:out value="${msg}"/></div>
+    </c:if>
+
+    ...
+  </div>
 	<header>
 	  <div class="header-logo">
 	    <img src="${pageContext.request.contextPath}/images/SkustaTeethLogo.png" alt="Dental Clinic Logo">
