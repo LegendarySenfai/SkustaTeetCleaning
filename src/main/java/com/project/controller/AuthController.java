@@ -1,17 +1,23 @@
 package com.project.controller;
 
 import com.project.dto.PendingUser;
+import com.project.model.Appointment;
 import com.project.model.User;
 import com.project.otp.EmailService;
 import com.project.otp.OtpInfo;
 import com.project.otp.OtpService;
+import com.project.repository.AppointmentRepository;
 import com.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class AuthController {
@@ -24,6 +30,9 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private AppointmentRepository appointmentRepo;
 
     @Autowired
     private OtpService otpService;
@@ -66,7 +75,7 @@ public class AuthController {
             model.addAttribute("error", "Username already exists.");
             return "/WEB-INF/jsp/register.jsp";
         }
-        // register uniqueness
+        // email uniqueness check
         if (userRepo.findByEmail(email).isPresent()) {
             model.addAttribute("error", "An account with this email already exists.");
             return "/WEB-INF/jsp/register.jsp";
@@ -335,6 +344,7 @@ public class AuthController {
         model.addAttribute("msg", "Password updated. You can now login with your new password.");
         return "/WEB-INF/jsp/login.jsp";
     }
+
  // === ACCOUNT DELETE ===
 
     @GetMapping("/account-delete")
@@ -365,14 +375,37 @@ public class AuthController {
             return "/WEB-INF/jsp/account-delete.jsp";
         }
 
-        // Delete account
-        userRepo.deleteById(userId);
-        session.invalidate(); // logout user
+        // Check user's appointments
+        List<Appointment> appts = appointmentRepo.findByPatientId(userId);
 
-        model.addAttribute("msg", "Your account has been deleted successfully.");
-        
-        
-        return "redirect:/login?status=deleted";
+        boolean hasPending = appts.stream().anyMatch(a -> {
+            String s = a.getStatus();
+            // treat null as active/pending (same logic in BookingController)
+            return s == null || s.equalsIgnoreCase("PENDING");
+        });
+
+        if (hasPending) {
+            model.addAttribute("error", "Account cannot be deleted because there is at least one PENDING appointment. Please cancel or complete it first.");
+            return "/WEB-INF/jsp/account-delete.jsp";
+        }
+
+        // No pending appointments — delete any historical appointments (so FK won't block)
+        List<Appointment> toDelete = appts.stream().collect(Collectors.toList());
+        try {
+            if (!toDelete.isEmpty()) {
+                appointmentRepo.deleteAll(toDelete);
+            }
+            userRepo.deleteById(userId);
+            session.invalidate(); // logout user
+            return "redirect:/login?status=deleted";
+        } catch (DataAccessException dae) {
+            // DB problem — return friendly message
+            model.addAttribute("error", "Failed to delete account due to a database error. Please contact support.");
+            return "/WEB-INF/jsp/account-delete.jsp";
+        } catch (Exception ex) {
+            model.addAttribute("error", "Unexpected error while deleting account. Please try again later.");
+            return "/WEB-INF/jsp/account-delete.jsp";
+        }
     }
 
 }
