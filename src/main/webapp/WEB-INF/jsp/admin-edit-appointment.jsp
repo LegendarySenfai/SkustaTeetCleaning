@@ -29,7 +29,7 @@
             </c:if>
         </div>
         <div class="user-info">
-            Admin | <a href="/logout">Logout</a>
+            Admin | <a href="/admin/login">Logout</a>
         </div>
     </header>
 
