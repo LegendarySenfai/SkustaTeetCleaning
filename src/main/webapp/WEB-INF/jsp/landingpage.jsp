@@ -124,12 +124,15 @@
             <div class="contact-form">
                 <h3>Get in Touch</h3>
                 <p>Feel free to drop us a line below!</p>
-                <form>
-                    <input type="text" placeholder="Name" required>
-                    <input type="email" placeholder="Email" required>
-                    <textarea placeholder="Type your message here" required></textarea>
-                    <button type="submit" class="btn">SEND</button>
+                <!-- keep markup same; JS will find inputs via form element -->
+                <form id="contactForm">
+                    <input type="text" name="name" placeholder="Name" required>
+                    <input type="email" name="email" placeholder="Email" required>
+                    <textarea name="message" placeholder="Type your message here" required></textarea>
+                    <button type="submit" class="btn" id="contactSendBtn">SEND</button>
                 </form>
+                <!-- container for validation/success messages -->
+                <div id="contactFeedback" aria-live="polite" style="margin-top:10px;"></div>
             </div>
         </div>
     </section>
@@ -201,6 +204,95 @@
                     }
                 });
             });
+
+            // ============================
+            // Contact form handling logic
+            // ============================
+            (function() {
+                const form = document.getElementById('contactForm');
+                const feedback = document.getElementById('contactFeedback');
+                const sendBtn = document.getElementById('contactSendBtn');
+
+                if (!form) return;
+
+                function showFeedback(msg, type) {
+                    // type: 'error' | 'success' | 'info'
+                    feedback.textContent = msg;
+                    feedback.style.color = (type === 'success') ? 'green' : (type === 'error' ? 'crimson' : '#333');
+                }
+
+                function clearFeedback() {
+                    feedback.textContent = '';
+                }
+
+                function isValidEmail(email) {
+                    // simple regex check
+                    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                }
+
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    clearFeedback();
+
+                    const name = (form.querySelector('input[name="name"]') || {}).value || '';
+                    const email = (form.querySelector('input[name="email"]') || {}).value || '';
+                    const message = (form.querySelector('textarea[name="message"]') || {}).value || '';
+
+                    if (name.trim().length < 8) {
+                        showFeedback('Name must be at least 8 characters long.', 'error');
+                        return;
+                    }
+                    if (!isValidEmail(email)) {
+                        showFeedback('Please enter a valid email address.', 'error');
+                        return;
+                    }
+                    if (message.trim().length < 8) {
+                        showFeedback('Message must be at least 8 characters long.', 'error');
+                        return;
+                    }
+
+                    // disable send button while sending
+                    sendBtn.disabled = true;
+                    const originalText = sendBtn.textContent;
+                    sendBtn.textContent = 'Sending...';
+
+                    try {
+                        const resp = await fetch('/contact/send', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ name: name.trim(), email: email.trim(), message: message.trim() })
+                        });
+
+                        if (resp.ok) {
+                            // optionally parse JSON returned by server
+                            let data = null;
+                            try { data = await resp.json(); } catch(_) { /* ignore parse errors */ }
+
+                            const serverMsg = data && data.message ? data.message : 'Your message has been sent. Thank you!';
+                            showFeedback(serverMsg, 'success');
+                            form.reset();
+                        } else {
+                            // server responded with error status
+                            let errText = 'Failed to send message. Please try again later.';
+                            try {
+                                const errData = await resp.json();
+                                if (errData && errData.message) errText = errData.message;
+                            } catch (_) {}
+                            showFeedback(errText, 'error');
+                        }
+                    } catch (networkErr) {
+                        console.error('Contact send error', networkErr);
+                        showFeedback('Could not send message. Check your connection and try again.', 'error');
+                    } finally {
+                        sendBtn.disabled = false;
+                        sendBtn.textContent = originalText;
+                    }
+                });
+            })();
+
         });
     </script>
 </body>
